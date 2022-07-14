@@ -33,8 +33,9 @@ module.exports = {
         sans: ['InterVariable', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        primary: colors.teal,
-        gray: colors.neutral,
+        primary: colors.sky,
+        //@ts-ignore
+        gray: colors.slate, // TODO: Remove ts-ignore after tw types gets updated to v3
       },
       typography: (theme) => ({
         DEFAULT: {

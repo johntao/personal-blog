@@ -5,6 +5,7 @@ import Pagination from '@/components/Pagination'
 import formatDate from '@/lib/utils/formatDate'
 import { CoreContent } from '@/lib/utils/contentlayer'
 import type { Blog } from 'contentlayer/generated'
+import { motion } from 'framer-motion'
 
 interface Props {
   posts: CoreContent<Blog>[]
@@ -60,33 +61,35 @@ export default function ListLayout({ posts, title, initialDisplayPosts = [], pag
           {displayPosts.map((post) => {
             const { slug, date, title, summary, tags } = post
             return (
-              <li key={slug} className="py-4">
-                <article className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-                  <dl>
-                    <dt className="sr-only">Published on</dt>
-                    <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                      <time dateTime={date}>{formatDate(date)}</time>
-                    </dd>
-                  </dl>
-                  <div className="space-y-3 xl:col-span-3">
-                    <div>
-                      <h3 className="text-2xl font-bold leading-8 tracking-tight">
-                        <Link href={`/blog/${slug}`} className="text-gray-900 dark:text-gray-100">
-                          {title}
-                        </Link>
-                      </h3>
-                      <div className="flex flex-wrap">
-                        {tags.map((tag) => (
-                          <Tag key={tag} text={tag} />
-                        ))}
+              <Link href={`/blog/${slug}`}>
+                <motion.li key={slug} className="py-12 px-4 flex group hover:bg-gray-100 dark:hover:bg-gray-800 bg-transparent bg-opacity-20 hover:rounded-xl" whileHover={{ scale: 1.02 }}>
+                  <article className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
+                    <dl>
+                      <dt className="sr-only">Published on</dt>
+                      <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+                        <time dateTime={date}>{formatDate(date)}</time>
+                      </dd>
+                    </dl>
+                    <div className="space-y-3 xl:col-span-3">
+                      <div>
+                        <h3 className="text-2xl font-bold leading-8 tracking-tight">
+                          <Link href={`/blog/${slug}`} className="text-gray-900 dark:text-gray-100">
+                            {title}
+                          </Link>
+                        </h3>
+                        <div className="flex flex-wrap">
+                          {tags.map((tag) => (
+                            <Tag key={tag} text={tag} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="prose max-w-none text-gray-500 dark:text-gray-400">
+                        {summary}
                       </div>
                     </div>
-                    <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-                      {summary}
-                    </div>
-                  </div>
-                </article>
-              </li>
+                  </article>
+                </motion.li>
+              </Link>
             )
           })}
         </ul>

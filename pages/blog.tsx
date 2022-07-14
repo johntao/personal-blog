@@ -5,7 +5,7 @@ import { sortedBlogPost, allCoreContent } from '@/lib/utils/contentlayer'
 import { InferGetStaticPropsType } from 'next'
 import { allBlogs } from 'contentlayer/generated'
 
-export const POSTS_PER_PAGE = 5
+export const POSTS_PER_PAGE = 1000
 
 export const getStaticProps = async () => {
   const posts = sortedBlogPost(allBlogs)
@@ -36,7 +36,7 @@ export default function Blog({
         posts={posts}
         initialDisplayPosts={initialDisplayPosts}
         pagination={pagination}
-        title="All Posts"
+        title="Blog"
       />
     </>
   )
