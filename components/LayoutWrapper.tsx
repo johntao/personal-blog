@@ -13,8 +13,8 @@ interface Props {
 }
 
 const LayoutWrapper = ({ children }: Props) => {
-  let [navShow, setNavShow] = useState(false)
-  let onToggleNav = () => setNavShow((status) => !status)
+  const [navShow, setNavShow] = useState(false)
+  const onToggleNav = () => setNavShow((status) => !status)
 
   return (
     <>
@@ -41,7 +41,7 @@ const LayoutWrapper = ({ children }: Props) => {
                 <Link
                   key={link.title}
                   href={link.href}
-                  className="rounded py-1 px-2 font-medium text-gray-900 sm:py-2 sm:px-3 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="rounded py-1 px-2 font-medium text-gray-900 hover:bg-gray-200 dark:text-gray-100 dark:hover:bg-gray-700 sm:py-2 sm:px-3"
                 >
                   {link.title}
                 </Link>
@@ -49,7 +49,7 @@ const LayoutWrapper = ({ children }: Props) => {
             </div>
             <ThemeSwitch />
             <button
-              className="w-8 h-8 ml-2 mr-1 rounded sm:hidden"
+              className="ml-2 mr-1 h-8 w-8 rounded sm:hidden"
               type="button"
               aria-label="Toggle Menu"
               onClick={onToggleNav}
