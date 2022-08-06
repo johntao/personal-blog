@@ -51,6 +51,8 @@ const siteMetadata = {
       // theme example: light, dark, dark_dimmed, dark_high_contrast
       // transparent_dark, preferred_color_scheme, custom
       theme: 'light',
+      // Choose the language giscus will be displayed in. options: en, es, zh-CN, zh-TW, ko, ja etc
+      lang: 'en',
       // theme when dark mode
       darkTheme: 'transparent_dark',
       // If the theme option above is set to 'custom`
