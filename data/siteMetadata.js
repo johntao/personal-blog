@@ -5,8 +5,8 @@ const siteMetadata = {
   description: '',
   language: 'en-us',
   theme: 'system', // system, dark or light
-  siteUrl: 'data:,siteUrl',
-  siteRepo: 'data:,siteRepo',
+  siteUrl: 'https://www.johntao.one',
+  siteRepo: 'https://github.com/johntao/personal-blog',
   siteLogo: '/static/images/logo.png',
   image: '/static/images/avatar.png',
   socialBanner: '/static/images/twitter-card.png',

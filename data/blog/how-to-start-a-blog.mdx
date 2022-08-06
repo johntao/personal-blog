@@ -1,347 +1,207 @@
 ---
 title: 從無到有建立一個部落格
 date: '2022-07-23'
+lastmod: '2022-08-06'
 tags: ['blog', 'next-js', 'guide']
 draft: false
-summary: '從無到有建立一個部落格, 本文包含整個心路歷程, 技術面的執行步驟, 參考資料蒐集整理以及決策點評估與結論'
+summary: '從無到有建立一個部落格，本文包含技術面的決策與執行步驟'
 images: []
 ---
 
-# 前言
+# TOC
 
-從無到有建立一個部落格  
-本文將心路歷程整理成一串數字列表  
-數字列表可對應到一串工作項目  
-工作項目會包含一串符號列表, 說明此項目細節  
-細節包含技術面的執行步驟, 參考資料蒐集整理, 決策點評估與結論...等  
-適合閱讀對象：工作項目 1\~5 不需要程式背景, 工作項目 6\~10 需要程式背景  
+| 內文大綱                                            | TL;DR                                                                                  |
+|-----------------------------------------------------|----------------------------------------------------------------------------------------|
+| [網頁建置技術](#網頁建置技術)                       | [Jamstack](https://jamstack.org)                                                       |
+| [Jamstack Site Generator](#Jamstack-Site-Generator) | Next.js                                                                                |
+| [Next.js Starter](#nextjs-starter)                  | [Tailwind Nextjs Starter Blog](https://github.com/timlrx/tailwind-nextjs-starter-blog) |
+| [Hosting Service](#Hosting-Service)                 | Vercel                                                                                 |
+| [域名供應商](#域名供應商)                           | NameCheap                                                                              |
 
-# 格式定義
+# 網頁建置技術
 
-歷程內文項目列表的定義, 若對格式定義沒興趣可直接跳到[歷程](#歷程)閱讀內文
+JAMstack, 一種網站靜態 (pre-built) 網頁建置架構, 由以下三元素所構成
 
-- 列表定義
-   - 數字項目代表一個 task, 數字大小可粗略表示執行順序
-   - 每個 task 含有多個 meta (以非數字項目表示)
-   - meta 有五種 class: 心路, 參考資料(關鍵字, 來源, 結論), 決策(目標, 理由, 結論), 未來展望
-- 項目關聯定義
-   - 1 個 task 可能含有 1~n 個 meta 
-   - 1 個 meta 對應到 1 個 metaClass
-   - 1 個 task 可出現 1~n 個 metaClass
-      - i.e. 每個 metaClass 在 1 個 task 的出現次數為 0~n 次
-   - 1 個 task 可以包含 0~n 個 task (nested tasks)
-- metaClass 定義
-   - 心路：解釋為何執行此 task, 以及執行結果心得
-   - 參考資料-\{關鍵字\}
-      - 關鍵字：可省略, 省略時直接看來源
-      - 來源：資料來源與評價, 沒寫通常就是 google search
-      - 結論：資料統整後的結論, 也會加入主觀想法
-   - 決策-\{目標\}
-      - 目標：決策目標
-      - 理由：決策方法
-      - 結論：決策結果
-   - 未來展望：可延伸製作的專案
+```
+J: Javascript, 各種前端框架 (Vue, React, Angular...)
+A: API (各種第三方服務)
+M: Markup (由 static generator 產生的靜態頁面)
+```
 
-# 歷程
+## 對比其他常見網站 solution stack
 
-1. 搜尋如何建立部落格
-   - 心路：不知道從何開始, 就先 google 吧
-   - 參考資料-如何建立部落格
-      - 來源：google
-      - 結論
-         - 若為了長期品牌經營, 不要使用部落格平台, 如 blogger, medium
-         - 初期為了流量亦可用同步刊登方式, 放在較多讀者的平台 (e.g. medium)
-         - 必須要有自己的域名, 呼應第一點, 通常使用平台沒辦法設定自己的域名
-   - 決策-要不要使用部落格平台
-      - 理由：根據資料結論
-      - 結論：自架網站, 部落格平台採用同步刊登
+![對比其他常見網站 solution stack](https://cdn.hashnode.com/res/hashnode/image/upload/v1597842081699/Wl2tDlrxg.png?auto=compress,format&format=webp)
+Image by [Tapas Adhikary](https://hashnode.com/@atapas) on [GreenRoots Blog](https://blog.greenroots.info/jamstack-for-all-an-introduction)
 
-2. 確定為何要寫技術部落格
-   - 心路：鞏固決心, 讀了很多優質文章
-   - 參考資料
-      - 來源：很多部落客的第一篇文章, 或是年度回顧會提到此項目
-      - 結論
-         - 作為知識庫, 給未來的自己看
-         - 菜鳥寫的文章, 更有教育價值
-         - 分享使人成長
-         - 建立個人品牌
-         - 在自己熱愛的領域耕耘, 加深利基
+上圖對比幾個常見的 solution stack, 由此可知 Jamstack 主要少了 web server 和 database  
+透過 static generator 產生的靜態頁面即可直接部署  
+此外還可以用 GitHub Pages, Netlify, Vercel 等服務免費部署, 省的考慮租賃機器或站台等麻煩事!
 
-3. 規劃利基
-   - 心路：有利基部落格才容易成長, 直接回想做過的東西和興趣, 很快就有結論
-   - 參考資料
-      - 來源
-         - task 1, 2 資料查詢通常會包含此項目
-      - 結論
-         - 自己感興趣或已熟知的領域
-         - 選擇目前市場較少人做的項目
-   - 決策-規劃利基
-      - 理由：依上述資料結論
-      - 結論：開發者工具/ 開源軟體介紹, 遊戲數值設計研究, 爬蟲研究, RPA 研究
+## 對比傳統網站建置架構
 
-4. 市場探勘（田野調查）, 並記錄在 spreadsheet
-   - 心路
-      - 搜尋各種技術部落格, 觀察利基, 發文頻率, 部落客背景, 取名特徵
-      - 發現很多大神
-      - 田野調查相當花時間
-   - 資料查詢
-      - 來源
-         - 搜尋引擎不容易直接找到整理好的部落格列表
-         - 搜尋引擎要直接用利基關鍵字查比較容易
-            - (e.g. ruby's on rail, asp.net, rust, js)
-         - 可從 Github awesome project 下手, 通常會有一些閱讀清單
-         - 可從 Github 名人下手, 通常會經營部落格
-         - 可從 Semrush 下手, 會有地區網站排名
-         - 可從友站連結, 推薦連結下手
-         - 有些部落格搜尋服務會針對 platform 特徵進行搜尋, 效果不佳
-            - i.e. 針對 blogger.com, wordpress 這類網頁源碼特徵進行搜尋
-      - 結論
-         - 收錄了 100 多個部落格, 取名特徵, 域名特徵, 利基, 年紀, 背景
-   - 未來展望：開發可探索技術類部落格的網路爬蟲
+![對比傳統網站建置架構](https://i.imgur.com/rRHrvkR.png)
+Image by [Ryan Chou](https://blog.typeart.cc/jamstack-intro/)
 
-5. 取部落格名字
-   - 心路：凡事起頭難, 取名字更難
-   - 資料查詢
-      - 來源
-         - 觀察田野調查資料
-         - 搜尋部落格取名相關文章
-         - [DR.DEAN^2: 如何幫網站命名？](https://deanlife.blog/blog-name/)
-         - [天下為暢: 如何取部落格名稱？把握這四原則和五步驟](https://wendellyu.com/p/728)
-      - 結論
-         - 直接用名字, 簡單暴力實用
-         - 形容詞 + 名詞 or 名詞 + 名詞
-            - (optional) 加入自己的名字或筆名
-            - (optional) 加入利基
-            - (optional) 呼應域名
-            - e.g. 電腦王阿達, 重灌狂人, 宅女小紅, 阿福筆記, 3C未來室
-         - 其他實用技巧
-            - 諧音, 縮寫, 隱喻
-            - 中文, 台語, 英語諧音
-            - 少用負面字詞
-            - 冷門字詞優於熱門字詞
-         - 最重要的還是內容
-   - 決策-決定名字
-      - 理由：依上述資料結論
-      - 結論：打玩開發
-   1. 建立 spreadsheet 記錄各種名詞排列組合
-      - 心路
-         - 用列表枚舉法, 找出最心儀的詞組
-         - 字詞囊括利基, 跟我相關的名詞, 我喜歡的字詞
-         - buzzword 容易跟其他人撞名 (i.e. [自由黑客](https://sssfreelancehacker.com/))
-         - 相當費時, 但最後有慢慢篩選出滿意的名字
+上圖對比傳統網站架構, 由此可知 JAMstack 能直接部署在 CDN 上, 存取速度會快上許多!  
+其中傳統架構 Web Server, App Server 不一定兩個都會有, 以傳統 Asp.net MVC 為例  
+沒有套用前端框架的情況下, Client --> IIS (WebServer) --> Database, 只會有一個 server
 
-6. 決定部落格平台
-   - 心路：略過比較 CMS, 直上 JAM stack
-   - 資料查詢
-      - 來源
-         - 觀察先前田野調查
-         - 去 [jamstack.org](https://jamstack.org) 查詢有哪些 framework
-         - 逐一查詢知名 JAM stack
-      - 結論
-         - JAM stack 有很多 framework
-            - Ghost 內建會員訂閱系統
-            - Next.Js 最夯
-            - Hugo 有一些不錯的佈景主題
-            - Gastby 是 framework 提供大量客製（上手難）
-         - 不一定要有 Headless CMS
-         - [jamstack.org](https://jamstack.org) 沒有包含 Wordpress Headless (怪哉)
-   - 決策-是否串接 Headless CMS
-      - 理由：開發時間成本高
-      - 結論：不串接 Headless CMS
-   - 決策-決定部落格平台
-      - 理由：選最夯的
-      - 結論：Next.js
+## JAMstack 幾個常見的元件
 
-7. 創建 Next.js 部落格
-   - 心路：直接套用現有樣板
-   - 資料查詢-next.js starter blog
-      - 結論
-         - [看起來有點陽春 (vercel next.js demo site)](https://next-blog-starter.vercel.app/)
-         - [決定選用這組樣板 (nextjs tailwind starter blog)](https://github.com/timlrx/tailwind-nextjs-starter-blog)
-   - 資料查詢-tailwind
-      - 結論
-         - 利大於弊
-         - 編譯後省略未使用的 classes
-         - 所見即所得, 看 className 可直接意會效果
-   - 決策-使用 template
-      - 理由：目測功能齊全 (SWAG!)
-      - 結論：timlrx/tailwind-nextjs-starter-blog
-   1. npx degit 'timlrx/tailwind-nextjs-starter-blog#contentlayer'
-      - 心路
-         - 偏好 typescript, pliny 當時跑不起來, 時間成本考量改用舊方法安裝
-         - pliny version: @pliny/cli/0.0.2 darwin-x64 node-v17.5.0
-         - contentlayer version: 8c5c5734319424b8de2fa6df2583cc46ccca8560
-         - contentlayer 跟 pliny 安裝後的版本略有差異
-      - 資料查詢-npx
-         - 結論：npm install & execute
-      - 資料查詢-degit
-         - 結論：default 不會產生 git repository (template-project-friendly)
-      - 決策-pliny
-         - 理由：建置後跑不起來
-         - 結論：改用舊方法
-   2. Personalize siteMetadata.js (site related information)
-      - 心路: 之後要回來補設定, 所有改動都是 hot reload
-   3. Modify the content security policy in next.config.js if you want to use any analytics provider or a commenting solution other than giscus.
-      - 心路: 沒改走預設值
-   4. Personalize authors/default.md (main author)
-      - 心路: 關於我, 內容先刪, 之後回來補
-   5. Modify projectsData.js (略)
-   6. Modify headerNavLinks.js to customize navigation links
-      - 心路: headerNav, 已移除 project
-   7. Add blog posts (略)
-   8. Deploy on Vercel (略)
+![JAMstack 幾個常見的元件](https://unpocodejava.files.wordpress.com/2021/10/image001.jpg)
+Image from [Un poco de Java](https://unpocodejava.com/2021/10/04/que-es-jamstack)
 
-8. 調整版型
-   - 心路
-      - 翻看田野調查, 發現 [Hugo Theme Hermit](https://github.com/Track3/hermit) 極簡風深得我心
-      - 但重刻一套 Hermit 實在太花時間了
-      - 改參考 [Template Examples](https://github.com/timlrx/tailwind-nextjs-starter-blog#examples) 把喜歡的效果移植過來
-   - 參考資料
-      - 來源
-         - 田野調查
-         - [Template Examples](https://github.com/timlrx/tailwind-nextjs-starter-blog#examples)
-      - 結論
-         - 加入 hover 反白或放大特效
-         - 調整 footer
-         - 調整色系
-   - 決策-做成 Hermit 極簡風
-      - 理由：時間成本高
-      - 結論：找 Template 現有元素
-   - 未來展望
-      - 想辦法做到類 Hermit 風格
-      - 加入快捷鍵元素
-   1. 調整色系
-      - 心路：異常好改, 直接去 tailwind.config.js 找到 theme.extend.colors 調整 primary, gray 這兩個值
-      - 參考資料
-         - 來源
-            - 可直接找 template examples source repos
-            - [tailwind 官網 customizing colors](https://tailwindcss.com/docs/customizing-colors)
-         - 結論：不太確定官網文件的意思, 但基本上 primary 一改, 整體色系就會變
-   2. 調整 Footer
-      - 心路
-         - 目標是把 Footer 壓成一行
-         - 以 css 菜鳥來說不好改, 直接抄其他人的做法比較快
-         - 未來有空要好好研究每個 css class 的意義
-   3. 調整 Header (NavBar)
-      - 心路
-         - 目標是固定 NavBar 在最上方, 加入半透明效果
-         - 需要將原來結構拆掉, 把 header 和 MobileNav 移到 SectionContainer 之外
-         - header 要另外新增一個 button
-            - 處理 MobileNav toggle
-            - 並且與 MobileNav 共用一個 toggle state]
-         - react 可以用空標籤當作虛擬根節點 (僅存在 source code, 實際不會 render)
-   4. 調整 MobileNav
-      - 心路
-         - 移除 toggle button (跑去 header 了)
-         - 移除 state, 由外部傳入 (跑去 header 了)
-         - css class 依舊難懂
-         - react 可以在 className 直接用 interpolated string 相當方便 (語法略醜
-   5. 調整 ListLayout
-      - 心路
-         - 增加 framer-motion, 直接抄現成相當容易
-         - 用 Link 把 element 包起來, 原先一定要點到字才有作用
-         - css class 依然相當晦澀
+上圖列出幾個常見的選項, 若網站只需要前端框架渲染頁面的話, JAM 中的 APIs 並不是必要元素  
+換句話說, J 與 M 從常見選項擇一使用, APIs 可多選亦可都不使用
 
-9. 決定發佈平台
-   - 心路
-      - 原先希望發佈在 Github Pages, 可以少辦一個 Vercel 帳號
-      - 但辦帳號的成本很低, 還是走 Vercel 實在
-   - 參考資料-Github Pages vs Vercel
-      - 結論
-         - Github Pages 預設是支援 Jekyll publish
-         - Vercel 對 Next.Js 有比較優的支援
-         - 看不到太多 next.js 發佈在 Github Pages 的案例
-   - 決策-發布平台
-      - 理由：時間成本, next.js 支援性
-      - 結論：Vercel
-   1. 執行發布
-      - 心路
-         - 雖然已經選擇輕鬆的路了, 第一次發布還是遇到失敗
-         - 根源是 Vercel 會遵循 .eslintrc.js 設定的 rules
-         - 只要把 'prettier' error 改成 warning 就會過
-         - localhost 並不吃這條設定, 所以平常沒發現這個問題
-         - prettier 對於 className 宣告順序有很多意見
-         - 原先有想一個一個改, 但還是直接 warning 比較實在
-      - 決策-prettier error
-         - 理由：時間成本
-         - 結論：不要手動改源碼, 直接降低 eslintrc rules 層級
+## 碎念
 
-10. 購買域名
-   - 心路
-      - 已經決定域名了, 但不確定哪一個供應商好
-      - 查了一下買域名相關文章, 複習一下要點
-      - 快速決定使用 NameCheap
-   - 參考資料-如何購買域名
-      - 來源
-         - [How to Buy a Domain Name: A Simple Guide to Get You Started](https://www.hostinger.com/tutorials/how-to-buy-a-domain-name)
-         - [2022 年該如何申請註冊網域？如何購買最便宜的網址？一篇從購買網址、網域設定到管理的完整教學！](https://techmoon.xyz/buy-domain/)
-         - [12個小技巧幫助你買到夢想中的網域名稱](https://skilluppp.com/how-to-choose-domain-name/)
-         - [比價工具: Domain Availability and Price](https://www.domcomp.com/)
-         - [檢查域名註冊資訊: Whois Lookup](https://www.namecheap.com/domains/whois/)
-         - [檢查不良記錄: Is My Website Penalized](https://ismywebsitepenalized.com/)
-         - [檢查不良記錄: Wayback Machinne](https://archive.org/web)
-      - 結論
-         - 有 com 選 com, 不要數字或減號, 不要重複字母
-         - 避免商標侵權
-         - 檢查是否有不良紀錄
-   - 參考資料-NameCheap vs GoDaddy
-      - 來源
-         - [Namecheap vs. GoDaddy – Which One For Buying Domains?](https://larryludwig.com/namecheap-vs-godaddy/#comparison-summary)
-         - [NameCheap vs Godaddy：7分鐘即可知道2022年哪個更好](https://hostingpill.com/zh-TW/Namecheap-vs-Godaddy/)
-         - [GoDaddy vs Namecheap – Which is the Best Domain Name Registrar?](https://winningwp.com/godaddy-vs-namecheap/)
-      - 結論
-         - 大部份文章都說 NameCheap 比較讚 (便宜, free privacy guard)
-         - 若願意花更多錢使用進階功能, 可選擇 NameCheap
-         - 文章看起來都差不多, 建議直接開兩個分頁選購比較
-   - 決策-NameCheap vs GoDaddy
-      - 理由：低費用
-      - 結論：NameCheap
-   - 決策-頂級域名 xyz vs one vs com
-      - 理由：雖然 xyz 更便宜, 但 one 更符合 blog 命名
-      - 結論：先買 one, 之後有機會再看要不要加買其他頂級域名
-   - 決策-NameCheap 要不要加購 https
-      - 理由：SWAG!
-      - 結論：直覺不用加購, 應該有現成的可設定, 事實也是如此
-   - 未來展望
-      - 改用其他域名供應商
-      - 加購其他頂級域名
-      - 確認 domain migration 意思
-   1. 將新域名加到 Vercel (website hoster)
-      - 心路
-         - NameCheap 和 Vercel 預設都會加一組 redirect 把 \{domainName\} 轉到 www.\{domainName\}
-         - 不清楚這樣設計原因為何, 如果兩邊設定相反可能會發生遞迴
-         - 但預設是可行的, 不求甚解!
-      - 參考資料-Vercel custom domain
-         - 來源：[Custom Domains](https://vercel.com/docs/concepts/projects/custom-domains)
-         - 結論
-            - 照著步驟做會產生各一組 "A Record" 和 "CName"
-            - 接著要去 domain provider 新增這兩組資料
-      - 參考資料-Namecheap config CName
-         - 來源：[How to Create a CNAME Record For Your Domain](https://www.namecheap.com/support/knowledgebase/article.aspx/9646/2237/how-to-create-a-cname-record-for-your-domain/)
-         - 結論
-            - 先設定 "A Record" 再設定 "CName"
-            - A Record 跟 CName 大同小異, 參考 CName 文章即可
-            - TTL 我兩個都設 Automatic
-            - 設定後 Vercel 那邊會自動 refresh
-            - 大約五分鐘內就可以用新域名開啟網頁了~
-            - 我這邊還有遇到小插曲, 第一次需要手動敲 http without s
-            - 但跑過一次之後 https 會自動補上, 感恩 Vercel 讚嘆 Vercel!
+我有蓄意不介紹傳統 CMS (Wordpress) 架站方法  
+選擇 Jamstack 原因可以參考[前段的討論](#對比傳統網站建置架構) (~~因爲潮~~)  
+此外, Jamstack 串接 Headless CMS 服務也不在本文討論範圍內  
+(追求最簡可行產品是也~)
 
-# 後記
+# Jamstack Site Generator
 
-本文詳實記錄從無到有建立一個部落格的心路歷程
-- 前半段
-   - 確認部落格發展的方向
-   - 搜集優質的中英文部落格
-   - 設計部落格名稱
-- 後半段
-   - 逐一解決技術面問題
-   - 決定 jamstack solution --> next.js
-   - 決定 next.js template --> tailwind next.js starter blog
-   - 調整 template theme
-   - 決定發佈平台 (website hoster) --> Vercel
-   - 購買域名與設定 --> NameCheap
+Site generator 將 markup 轉換成靜態頁面, 通常 generator 會搭配一種特定程式語言和前端框架（樣板語言）  
+以 Next.js 為例, 程式語言為 Javascript, 前端框架則使用 React  
+更多 generator 可參考 [Jamstack.org Site Generators](https://jamstack.org/generators)  
+本站使用 Next.js 架設, 選擇理由單純為了 userbase (沒錯, 就是蹭熱度)  
+以下簡易介紹幾個常見 generator
+- Hugo: 有很多佈景主題
+   - Language: GO
+   - Template: GO
+- Gatsby: 資料層預設使用 GraphQL, 有 plugin 生態系
+   - Language: Javascript
+   - Template: React
+- Jekyll: Github Pages 預設使用的 generator
+   - Language: Ruby
+   - Template: Liquid
 
+# Next.js Starter
 
-由於前後時間拉很長, 所以最後寫的工作項目, 明顯參考資料多於前半段  
-如讀者參考資料有疑惑, 或是對內文有什麼見解, 也歡迎在底下留言
+Starter 中文可以翻成新手包 (傻瓜包), 目的是一鍵安裝馬上得到一個可用又不難看的產品  
+通常走官網新手教學安裝步驟會多一些, 預設的網頁畫面也會很陽春, 這時候就會需要 Starter  
+Starter 和 Theme 相比又厲害一點  
+Theme 通常只有視覺上幫你套好, 功能面要自己來, Starter 則是全包  
+(碎念: bootstrap/ template 也是差不多的概念, 大家知道就好...)  
+經過一番搜尋 (keyword: next.js blog starter), 沒發現幾個新手包  
+(碎念: 大概是 Next.js 輸 Hugo/ Gatsby 主要理由)  
+最終找了兩個, 顯然的決定使用 TailwindCss Starter Blog
+- [Vercel Next.js Demo Site (覺得陽春)](https://next-blog-starter.vercel.app)
+- [Next.js TailwindCss Starter Blog (看起來厲害多了)](https://github.com/timlrx/tailwind-nextjs-starter-blog)
+
+## TailwindCss
+
+>A utility-first CSS framework packed with classes like __flex__, __pt-4__, __text-center__ and __rotate-90__ that can be composed to build any design, directly in your markup.  
+>--- TailwindCss 官網
+
+簡單說 TailwindCss 是為了解決 class name 命名困境而產生的工具  
+- flex --> display as flex
+- pt-4 --> padding-top by 4 units
+
+每個 class 只做一件事 (utility), 再由多個 utility 去建構任何設計  
+這樣透過閱讀 class name 就可知道目前套用了哪些 style, 以此逃脫命名困境  
+此外, TailwindCss 也保留了傳統命名方式, 依舊可以用一組別名去替換過長的 class name  
+TailwindCss 其他特點
+- VSCode 可安裝 TailwindCss intellisense 插件, 不需要記憶各種名稱
+- 部署時會自動移除沒使用到的 classes, 減少 css file 檔案大小
+- Framework 色系, 字體, 字級都可以透過 config file 客製
+
+## Starter Blog 建置技術步驟
+
+依照官網 [readme](https://github.com/timlrx/tailwind-nextjs-starter-blog#quick-start-guide) 有下列步驟  
+其中 pliny 這條路當時版本跑不起來, 以下列表將使用舊方法安裝  
+(pliny version: @pliny/cli/0.0.2 darwin-x64 node-v17.5.0)
+1. npx degit 'timlrx/tailwind-nextjs-starter-blog#contentlayer'
+   - 偏好 typescript 所以指向 branch 'contentlayer'
+   - contentlayer version: 8c5c5734319424b8de2fa6df2583cc46ccca8560
+   - contentlayer 跟 pliny 安裝後的版本略有差異
+   - degit 預設不會建立 .git folder (適用於有 'template' 標籤的 repo)
+2. Personalize siteMetadata.js (site related information)
+   - 可以先改幾個基本的, 之後再回來補設定
+   - 所有改動都是 hot reload
+3. Modify the content security policy in next.config.js if you want to use any analytics provider or a commenting solution other than giscus.
+   - 沒特別改動
+4. Personalize authors/default.md (main author)
+   - 關於我, 可以之後再補
+5. Modify projectsData.js (略)
+6. Modify headerNavLinks.js to customize navigation links
+   - 先移除 project, 之後有了再補
+7. Add blog posts (略)
+8. Deploy on Vercel (略)
+
+## 設計微調
+
+本來想做成 [Hugo Theme Hermit](https://github.com/Track3/hermit) 極簡風  
+但用 react 重刻一遍實在太費時了, 改成參考拼湊 [readme 範例](https://github.com/timlrx/tailwind-nextjs-starter-blog#examples)  
+以下列出幾個有改動的地方
+1. 調整色系
+   - 在 tailwind.config.js 找到 theme.extend.colors 調整 primary, gray 這兩個值
+2. 調整 Footer, 改成 one-liner
+3. 調整 Header (NavBar)
+   - 固定 NavBar 在最上方, 加入半透明效果
+4. 調整 MobileNav (因應第三條改動, 需要微調)
+5. 調整 ListLayout
+   - 增加 framer-motion
+
+# Hosting Service
+
+當初是 Vercel/ GitHub Pages 二選一, 本來想放在 GitHub 上, 好處可以少辦一個帳號  
+後來發現 GitHub Pages 預設走 Jekyll, 如要使用 Next.js 會需要額外設定  
+做一組收下巴運動後, 果斷使用 Vercel (next.js 親爹有加分)
+
+## 技術步驟
+
+照著[官網文件](https://nextjs.org/learn/basics/deploying-nextjs-app)步驟做  
+走到第四步建置的時候會發生錯誤, 原因是 Vercel 會遵循 .eslintrc.js 裡的 rules  
+找到這行 'prettier': 'error'  
+把 prettier 告警層級 (warning level)  
+從 'error' 改成 'warning' 就能通過建置  
+
+平常用 localhost 開發不會觸動到 prettier warning rules  
+仔細一看 prettier 意見相當多, 連 class name 宣告順序都會抱怨  
+有恆心的人可以挑戰一個ㄧ個改, 我果斷放棄直接降低告警層級
+
+# 域名供應商
+
+打算 NameCheap, GoDaddy 二選一, 爬了一下文章   
+大部份文章都說 NameCheap 比較讚 (便宜 + free privacy guard)  
+其餘文章內容看起來都差不多, 雙開分頁直接選購比較  
+最後還是選擇 NameCheap, 因為 Cheap  
+這邊注意可以不用加購 https, 因為 Vercel 會附贈
+
+## 將新域名加到 Vercel, 技術步驟
+
+1. 參考 Vercel 官網文件 [Custom Domains](https://vercel.com/docs/concepts/projects/custom-domains)
+1. 按照步驟產生各一組 "A Record" 和 "CName"
+1. 接著去 NameCheap (domain provider) 新增這兩組資料
+1. 參考 NameCheap 官網文件 [How to Create a CNAME Record For Your Domain](https://www.namecheap.com/support/knowledgebase/article.aspx/9646/2237/how-to-create-a-cname-record-for-your-domain/)
+1. 先設定 "A Record" 再設定 "CName"
+1. A Record 與 CName 大同小異, 可以複製 CName 文章步驟
+1. TTL 我兩邊都設 Automatic
+1. 設定後 Vercel 那邊會自動 refresh
+1. 大約五分鐘內就可以用新域名開啟網頁了~
+
+### 插曲
+
+1. 第一次開啟網頁需要手動敲 http (without s)
+1. 跑過一次後 https 會自動補上, 感恩 Vercel 讚嘆 Vercel!
+1. NameCheap 和 Vercel 預設都會加一組 redirect 把 johntao.one 轉到 www.johntao.one
+   - 不清楚這樣設計原因為何
+   - 如果兩邊設定相反可能發生遞迴
+   - 但預設是可行的, 不求甚解!
+
+# 總結
+
+- 本文從技術角度記錄如何建立一個部落格
+- 首先介紹使用的網頁建置技術 (Jamstack)
+- 再依序介紹我選用的 Jamstack 技術 (Next.js)
+- 以及相關新手包與發布服務 (Vercel)
+- 最後再介紹域名供應商以及如何設定買好的域名 (NameCheap)
+
+## 許願池
+
+- 這文章是第二版, 把一些參考資料和心路歷程閹割掉了, 如有讀者想看歡迎底下敲碗
+- 未來希望能實作 reference popup 的效果, 這樣就能隨心所欲的置入迷因和 buzzwords :D
+- 若對內文有什麼見解, 或希望未來看到什麼主題, 也歡迎在底下留言～
