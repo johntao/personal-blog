@@ -71,7 +71,7 @@ const LayoutWrapper = ({ children }: Props) => {
         </div>
       </header>
       <SectionContainer>
-        <div className="flex h-screen flex-col justify-between">
+        <div className="flex flex-col justify-between">
           <main className="mb-auto">{children}</main>
           <Footer />
         </div>
