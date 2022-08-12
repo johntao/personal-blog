@@ -23,3 +23,43 @@ input:-webkit-autofill,
 input:-webkit-autofill:focus {
   transition: background-color 600000s 0s, color 600000s 0s;
 }
+
+:root {
+  --animate-duration: 1s;
+}
+
+.animated {
+  animation-duration: 1s;
+  animation-duration: var(--animate-duration);
+  animation-fill-mode: both
+}
+
+@keyframes slideInUp {
+  0% {
+    transform: translate3d(0,-100%,0);
+    visibility: visible
+  }
+
+  to {
+    transform: translateZ(0)
+  }
+}
+
+.slideInUp {
+  animation-name: slideInUp
+}
+
+@keyframes slideOutDown {
+  0% {
+    transform: translateZ(0)
+  }
+
+  to {
+    visibility: hidden;
+    transform: translate3d(0,-100%,0)
+  }
+}
+
+.slideOutDown {
+  animation-name: slideOutDown
+}
