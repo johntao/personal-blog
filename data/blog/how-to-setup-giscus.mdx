@@ -1,0 +1,178 @@
+---
+title: 部落格串接 giscus 留言板服務
+date: '2022-08-12'
+lastmod: '2022-08-12'
+tags: ['build-a-blog', 'blog-comment-section', 'giscus', 'how-to']
+draft: false
+summary: '逐步介紹在 next.js blog starter 要如何串接 giscus 留言板服務'
+images: []
+---
+
+適合閱讀對象
+
+- 具備基礎程式能力
+- 已經架好 next.js blog 但還沒設定留言板的你
+- 聽過 disqus or giscus 服務但都沒串接過的你
+
+---
+
+本站使用 [next.js blog starter pack](https://github.com/timlrx/tailwind-nextjs-starter-blog) 預設有提供 disqus/ giscus 兩種留言板服務的接口
+
+這邊暫不討論 disqus，果斷選用 giscus，因為 github 是世界上最大的工程師(~~同性~~)交友網站
+
+---
+
+giscus 是基於 __GitHub Discussions__ 的開源留言板服務
+
+特點有
+- 免費、無廣告、無追蹤器
+- 不需要資料庫，所有資料都存放在 GitHub Discussions
+- 支援黑暗主題
+- 支援多種語言
+- 即時同步 GitHub Discussions 資料更動
+- 支援本地架設服務 (Self-hosted)
+
+---
+
+以下開始正文
+
+---
+
+一開始什麼都沒設定時，點擊 __Load Comments__ 會出現錯誤訊息 __An error occurred: giscus is not installed on this repository__
+
+開啟檔案 `./data/siteMetadata.js` 確認 `comment` 相關設定 (如下圖)
+
+![檔案 siteMetadata.js 程式碼片段，屬性 siteMetadata.comment](/static/images/2022/site-metadata-comment.png)
+
+確認 provider 有設置正確，根據註解提示走訪 [giscus 頁面](https://giscus.app/) 看到 Configuration 區塊 (如下圖)  
+
+![giscus app 網頁，Configuration 區塊](/static/images/2022/giscus-app-configuration.png)
+
+設置留言區的語系 (目前設為英文)，接著往下看到 Repository 區塊
+
+第一點，確認 Repository 設為 public (已經是了)
+
+第二點，點擊連結安裝 [giscus app](https://github.com/apps/giscus)
+
+安裝時會詢問要全 repository (庫) 安裝或是裝在特定庫，我選擇只裝在部落格的庫
+
+第三點，確認庫的 "Discussions" 功能有打開，點開畫面上的連結 [enabling if for your repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/enabling-or-disabling-github-discussions-for-a-repository#enabling-or-disabling-github-discussions-for-your-repository) (如下圖)
+
+![GitHub Docs, Enabling or disabling GitHub Discussions for a repository](/static/images/2022/enable-it-for-your-repository.png)
+
+依照內文步驟開啟庫的 Discussions 功能
+
+---
+
+回到 giscus app 頁面輸入你的使用者名稱和庫名，若步驟都正確執行，會出現通過檢核的提示 (如下圖)
+
+![Giscus app, repository match all criteria to enable giscus](/static/images/2022/repository-match-giscus-criteria.png)
+
+接著看到 "Page ↔️ Discussions Mapping" 區塊，修改這裡會影響後面 config 自動產生帶出來的值
+
+沒研究其他選項的差異，可以先略過這段，直接使用預設值 `pathname`
+
+接著看到 "Discussion Category" 如下圖
+
+![Giscus app, Discussion Category](/static/images/2022/giscus-discussion-category.png)
+
+這個是必填欄位，跟前一步一樣，修改會影響 config 最後產出的值，這邊我選 General
+
+接著看到 "Features" 區塊，這邊我沒改動直接使用預設值
+
+"Theme"，一樣預設值 GitHub Light
+
+最後看到 "Enable giscus" 區塊，這裡就是前面提到自動產生的 config (如下圖)
+
+![Giscus app, Enable giscus](/static/images/2022/enable-giscus.png)
+
+---
+
+理論上這裡的 script 是給開發者放在網頁上，執行後就會打通 giscus 服務，然後留言板
+
+但我們有套用 next.js 框架，框架會幫忙寫入 script，所以這裡只需要先記憶有這四個必要參數
+
+- data-repo=
+- data-repo-id=
+- data-category=
+- data-category-id=
+
+然後，回到前面的 `siteMetadata.js` ~~把參數大膽貼上~~ 就錯了！
+
+這四個參數屬於敏感訊息（其實沒有很敏感，我們先保持想像他很機密）
+
+所以不會寫死在這，實際上會在 Vercel 部署時，用環境變數方式寫入
+``` javascript
+giscusConfig: {
+   repo: process.env.NEXT_PUBLIC_GISCUS_REPO,
+   repositoryId: process.env.NEXT_PUBLIC_GISCUS_REPOSITORY_ID,
+   category: process.env.NEXT_PUBLIC_GISCUS_CATEGORY,
+   categoryId: process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID
+}
+```
+
+可以看到 `provider: 'giscus',` 這行上面註解提到的連結
+
+`https://vercel.com/docs/environment-variables` 連結點開如下圖
+
+![Vercel, Environment variables](/static/images/2022/declare-an-environment-variable.png)
+
+接著依步驟指示，將四個參數新增到環境變數，完成後的樣子如下圖所示
+
+![Vercel, Environment variables all set](/static/images/2022/vercel-environment-variables.png)
+
+---
+
+理論上到這就大功告成了，但開啟留言板後依然出現錯誤
+
+![Giscus, still error](/static/images/2022/giscus-still-error.png)
+
+此時荒髒的搜尋 "giscus.app refused to connect." 不會得到有用的資訊
+
+必須淡定的開啟 DevTools 檢查元素，點選留言板的位置，發現 iframe src 怪怪的  
+``` html
+<iframe class="giscus-frame" src="https://giscus.app/undefined/widget?origin=...略" />
+```
+
+Url 中出現迷樣的 `undefined`
+
+![Meme: Confused Face](/static/images/meme-confused-face.jpeg)
+
+這時荒髒與淡定都無濟於事，我們需要的是科學性的狂野假設  
+
+仔細一看，`undefined` 出現的位置，很像是 routing 中缺少了某個參數，看起來就是少了 en, zh 之類的多語代碼
+
+馬上回到[新手包的源始碼](https://github.com/timlrx/tailwind-nextjs-starter-blog/blob/master/data/siteMetadata.js)，找到 `giscusConfig` 區塊
+
+稍微比對後發現我們的版本少了 `lang: 'en',`，推論當時 typescript 分支的版本，不需要 `lang` 參數也能運作
+
+把這行補上後，就打完收工啦
+
+---
+
+後記
+
+目前我們用的 #contentlayer 分支，雖然有 typescript 很香，但也落後主幹 371 個 commits (如下圖)
+
+![tailwind-nextjs-starter-blog branch #contentlayer](/static/images/2022/branch-content-layer.png)
+
+落後這麼多的理由有很多，可能是忘了合併或沒時間合併，最糟的情況就是程式差異太大，根本無法合併
+
+衍生問題就像我們這裡遇到的 `lang`，如果持續發生對開發者來說會是很大的困擾
+
+目前我能想到的幾種解決辦法
+
+1. 維持一個庫，一開始就確定兩種語言並行，所有 feature 實作兩遍，如此就不需要因程式語言不同而切出分支
+1. 拆成兩個庫，一種程式語言一個庫，所有 feature 還是要實作兩遍，不需要因程式語言切分支
+1. 維持一個庫，只用一種程式語言 (A)，另一種語言 (B) 由工具轉換產生，所有 feature 只需要實作一遍
+1. 維持一個庫，只用一種語言，另一種語言忍痛放棄
+
+其中一二本質上是沒有解決問題的，分支變好看但程式都要寫兩份
+
+第三種作法是堅定一個庫一種語言，有需要轉換的人在開發階段自行使用工具轉換，提交推送時一率改回原來的語言
+
+三看起來是有改善了，但有點夢幻，我想不到什麼厲害的工具可以快速又精準的持續轉譯兩種語言
+
+說到底還是忍痛放棄海闊天空，一個程式庫多種撰寫風格從來不是好事情 (解合併衝突解到起衝突)
+
+還是一個庫一種撰寫風格路才走得長久 😌
