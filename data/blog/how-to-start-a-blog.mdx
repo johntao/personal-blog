@@ -1,10 +1,10 @@
 ---
-title: 從無到有建立一個部落格
+title: 使用 Jamstack 技術建置部落格
 date: '2022-07-23'
 lastmod: '2022-08-06'
-tags: ['blog', 'next-js', 'guide']
+tags: ['build-a-blog', 'solution-stack', 'jamstack', 'tailwindcss', 'react', 'next-js', 'intro', 'tech-skills-basic']
 draft: false
-summary: '從無到有建立一個部落格，本文包含技術面的決策與執行步驟'
+summary: '介紹 Jamstack 技術，分享建立一個部落格，技術面會有哪些決策以及執行步驟'
 images: []
 ---
 
@@ -12,66 +12,91 @@ images: []
 
 | 內文大綱                                            | TL;DR                                                                                  |
 |-----------------------------------------------------|----------------------------------------------------------------------------------------|
+| [適合閱讀對象](#適合閱讀對象)                       | 具備基礎程式能力                                                       |
 | [網頁建置技術](#網頁建置技術)                       | [Jamstack](https://jamstack.org)                                                       |
 | [Jamstack Site Generator](#Jamstack-Site-Generator) | Next.js                                                                                |
 | [Next.js Starter](#nextjs-starter)                  | [Tailwind Nextjs Starter Blog](https://github.com/timlrx/tailwind-nextjs-starter-blog) |
 | [Hosting Service](#Hosting-Service)                 | Vercel                                                                                 |
 | [域名供應商](#域名供應商)                           | NameCheap                                                                              |
 
+# 適合閱讀對象
+
+- 具備基礎程式能力
+- 對網頁技術有興趣的人
+- 想使用非 CMS 技術架站的人
+- 沒學過 react 想做中學的人
+
 # 網頁建置技術
 
-JAMstack, 一種網站靜態 (pre-built) 網頁建置架構, 由以下三元素所構成
+JAMstack，一種 (pre-built) 靜態網頁建置技術，由以下三元素所構成
 
-```
-J: Javascript, 各種前端框架 (Vue, React, Angular...)
-A: API (各種第三方服務)
-M: Markup (由 static generator 產生的靜態頁面)
-```
+- __J__: Javascript，各種前端框架 (Vue、React、Angular...)
+- __A__: API (各種第三方服務)
+- __M__: Markup (由 __static generator__ 產生的靜態頁面)
 
 ## 對比其他常見網站 solution stack
 
-![對比其他常見網站 solution stack](https://cdn.hashnode.com/res/hashnode/image/upload/v1597842081699/Wl2tDlrxg.png?auto=compress,format&format=webp)
-Image by [Tapas Adhikary](https://hashnode.com/@atapas) on [GreenRoots Blog](https://blog.greenroots.info/jamstack-for-all-an-introduction)
+<ImageWithCap
+   alt="對比其他常見網站 solution stack"
+   src="/static/images/2022/solution-stack-comparison.png"
+   cap="Image by [Tapas Adhikary](https://hashnode.com/@atapas) on [GreenRoots Blog](https://blog.greenroots.info/jamstack-for-all-an-introduction)"
+   />
 
-上圖對比幾個常見的 solution stack, 由此可知 Jamstack 主要少了 web server 和 database  
-透過 static generator 產生的靜態頁面即可直接部署  
-此外還可以用 GitHub Pages, Netlify, Vercel 等服務免費部署, 省的考慮租賃機器或站台等麻煩事!
+上圖對比幾個常見的 solution stack，由此可知 Jamstack 主要少了 web server 和 database
+
+透過 __static generator__ 產生的靜態頁面即可直接部署
+
+此外還可以用 GitHub Pages、Netlify、Vercel 等服務免費部署，省的考慮租賃機器或站台等麻煩事！
 
 ## 對比傳統網站建置架構
 
-![對比傳統網站建置架構](https://i.imgur.com/rRHrvkR.png)
-Image by [Ryan Chou](https://blog.typeart.cc/jamstack-intro/)
+<ImageWithCap
+   alt="對比傳統網站建置架構"
+   src="/static/images/2022/traditional-web-vs-jamstack.png"
+   cap="Image by [Ryan Chou](https://blog.typeart.cc/jamstack-intro/)"
+   />
 
-上圖對比傳統網站架構, 由此可知 JAMstack 能直接部署在 CDN 上, 存取速度會快上許多!  
-其中傳統架構 Web Server, App Server 不一定兩個都會有, 以傳統 Asp.net MVC 為例  
-沒有套用前端框架的情況下, Client --> IIS (WebServer) --> Database, 只會有一個 server
+上圖對比傳統網站架構，由此可知 JAMstack 能直接部署在 CDN 上，存取速度會快上許多！
+
+其中傳統架構 Web Server、App Server 不一定兩個都會有，以傳統 Asp.net MVC 為例
+
+沒有套用前端框架的情況下，Client --> IIS (WebServer) --> Database，只會有一個 server
 
 ## JAMstack 幾個常見的元件
 
-![JAMstack 幾個常見的元件](https://unpocodejava.files.wordpress.com/2021/10/image001.jpg)
-Image from [Un poco de Java](https://unpocodejava.com/2021/10/04/que-es-jamstack)
+<ImageWithCap
+   alt="JAMstack 幾個常見的元件"
+   src="/static/images/2022/what-is-jamstack.jpg"
+   cap="Image from [Un poco de Java](https://unpocodejava.com/2021/10/04/que-es-jamstack)"
+   />
 
-上圖列出幾個常見的選項, 若網站只需要前端框架渲染頁面的話, JAM 中的 APIs 並不是必要元素  
-換句話說, J 與 M 從常見選項擇一使用, APIs 可多選亦可都不使用
+上圖列出幾個常見的選項，若網站只需要前端框架渲染頁面的話，JAM 中的 APIs 並不是必要元素
+
+換句話說，J 與 M 從常見選項擇一使用，APIs 可多選亦可都不使用
 
 ## 碎念
 
-我有蓄意不介紹傳統 CMS (Wordpress) 架站方法  
-選擇 Jamstack 原因可以參考[前段的討論](#對比傳統網站建置架構) (~~因爲潮~~)  
-此外, Jamstack 串接 Headless CMS 服務也不在本文討論範圍內  
-(追求最簡可行產品是也~)
+我有蓄意不介紹傳統 CMS (Wordpress) 架站方法
+
+選擇 Jamstack 原因可以參考[前段的討論](#對比傳統網站建置架構) (~~因爲潮~~)
+
+此外，Jamstack 串接 Headless CMS 服務也不在本文討論範圍內 (追求最簡可行產品是也~)
 
 # Jamstack Site Generator
 
-Site generator 將 markup 轉換成靜態頁面, 通常 generator 會搭配一種特定程式語言和前端框架（樣板語言）  
-以 Next.js 為例, 程式語言為 Javascript, 前端框架則使用 React  
-更多 generator 可參考 [Jamstack.org Site Generators](https://jamstack.org/generators)  
-本站使用 Next.js 架設, 選擇理由單純為了 userbase (沒錯, 就是蹭熱度)  
+Site generator 將 markup 轉換成靜態頁面，通常 generator 會搭配一種特定程式語言和前端框架（樣板語言）
+
+以 Next.js 為例，程式語言為 Javascript，前端框架則使用 React
+
+更多 generator 可參考 [Jamstack.org Site Generators](https://jamstack.org/generators)
+
+本站使用 Next.js 架設，選擇理由單純為了 userbase (沒錯，就是蹭熱度)
+
 以下簡易介紹幾個常見 generator
 - Hugo: 有很多佈景主題
    - Language: GO
    - Template: GO
-- Gatsby: 資料層預設使用 GraphQL, 有 plugin 生態系
+- Gatsby: 資料層預設使用 GraphQL，有 plugin 生態系
    - Language: Javascript
    - Template: React
 - Jekyll: Github Pages 預設使用的 generator
@@ -80,128 +105,149 @@ Site generator 將 markup 轉換成靜態頁面, 通常 generator 會搭配一�
 
 # Next.js Starter
 
-Starter 中文可以翻成新手包 (傻瓜包), 目的是一鍵安裝馬上得到一個可用又不難看的產品  
-通常走官網新手教學安裝步驟會多一些, 預設的網頁畫面也會很陽春, 這時候就會需要 Starter  
-Starter 和 Theme 相比又厲害一點  
-Theme 通常只有視覺上幫你套好, 功能面要自己來, Starter 則是全包  
-(碎念: bootstrap/ template 也是差不多的概念, 大家知道就好...)  
-經過一番搜尋 (keyword: next.js blog starter), 沒發現幾個新手包  
-(碎念: 大概是 Next.js 輸 Hugo/ Gatsby 主要理由)  
-最終找了兩個, 顯然的決定使用 TailwindCss Starter Blog
+Starter 中文可以翻成新手包 (傻瓜包)，目的是一鍵安裝馬上得到一個可用又不難看的產品
+
+通常走官網新手教學安裝步驟會多一些，預設的網頁畫面也會很陽春，這時候就會需要 Starter
+
+Starter 和 Theme 相比 Starter 又厲害一點
+
+Theme 通常只有視覺上幫你套好，功能面要自己來，Starter 則是全包  
+(碎念: bootstrap/ template 也是差不多的概念，大家知道就好...)
+
+經過一番搜尋 (keyword: next.js blog starter)，沒發現幾個新手包  
+(碎念: 大概是 Next.js 輸 Hugo/ Gatsby 主要理由)
+
+最終找了兩個，顯然的決定使用 TailwindCss Starter Blog
 - [Vercel Next.js Demo Site (覺得陽春)](https://next-blog-starter.vercel.app)
 - [Next.js TailwindCss Starter Blog (看起來厲害多了)](https://github.com/timlrx/tailwind-nextjs-starter-blog)
 
 ## TailwindCss
 
->A utility-first CSS framework packed with classes like __flex__, __pt-4__, __text-center__ and __rotate-90__ that can be composed to build any design, directly in your markup.  
+>A utility-first CSS framework packed with classes like `flex`, `pt-4`, `text-center` and `rotate-90` that can be composed to build any design, directly in your markup.  
 >--- TailwindCss 官網
 
-簡單說 TailwindCss 是為了解決 class name 命名困境而產生的工具  
-- flex --> display as flex
-- pt-4 --> padding-top by 4 units
+簡單說 TailwindCss 是為了解決 class name 命名困境而產生的工具
+- `flex` --> `display` as `flex`
+- `pt-4` --> `padding-top` by 4 units
 
-每個 class 只做一件事 (utility), 再由多個 utility 去建構任何設計  
-這樣透過閱讀 class name 就可知道目前套用了哪些 style, 以此逃脫命名困境  
-此外, TailwindCss 也保留了傳統命名方式, 依舊可以用一組別名去替換過長的 class name  
+每個 class 只做一件事 (utility)，再由多個 utility 去建構任何設計
+
+這樣透過閱讀 class name 就可知道目前套用了哪些 style，以此逃脫命名困境
+
+此外，TailwindCss 也保留了傳統命名方式，依舊可以用一組別名去替換過長的 class name
+
 TailwindCss 其他特點
-- VSCode 可安裝 TailwindCss intellisense 插件, 不需要記憶各種名稱
-- 部署時會自動移除沒使用到的 classes, 減少 css file 檔案大小
-- Framework 色系, 字體, 字級都可以透過 config file 客製
+- VSCode 可安裝 TailwindCss intellisense 插件，不需要記憶各種名稱
+- 部署時會自動移除沒使用到的 classes，減少 css file 檔案大小
+- Framework 色系，字體，字級都可以透過 config file 客製
 
 ## Starter Blog 建置技術步驟
 
-依照官網 [readme](https://github.com/timlrx/tailwind-nextjs-starter-blog#quick-start-guide) 有下列步驟  
-其中 pliny 這條路當時版本跑不起來, 以下列表將使用舊方法安裝  
-(pliny version: @pliny/cli/0.0.2 darwin-x64 node-v17.5.0)
-1. npx degit 'timlrx/tailwind-nextjs-starter-blog#contentlayer'
+依照官網 [readme](https://github.com/timlrx/tailwind-nextjs-starter-blog#quick-start-guide) 有下列步驟
+
+其中 `pliny` 這條路當時版本跑不起來，以下列表將使用舊方法安裝  
+(pliny version: `@pliny/cli/0.0.2 darwin-x64 node-v17.5.0`)
+1. `npx degit 'timlrx/tailwind-nextjs-starter-blog#contentlayer'`
    - 偏好 typescript 所以指向 branch 'contentlayer'
-   - contentlayer version: 8c5c5734319424b8de2fa6df2583cc46ccca8560
-   - contentlayer 跟 pliny 安裝後的版本略有差異
-   - degit 預設不會建立 .git folder (適用於有 'template' 標籤的 repo)
-2. Personalize siteMetadata.js (site related information)
-   - 可以先改幾個基本的, 之後再回來補設定
+   - `contentlayer` version: 8c5c5734319424b8de2fa6df2583cc46ccca8560
+   - `contentlayer` 跟 `pliny` 安裝後的版本略有差異
+   - `degit` 預設不會建立 `.git` folder (適用於有 'template' 標籤的 repo)
+2. Personalize `siteMetadata.js` (site related information)
+   - 可以先改幾個基本的，之後再回來補設定
    - 所有改動都是 hot reload
-3. Modify the content security policy in next.config.js if you want to use any analytics provider or a commenting solution other than giscus.
+3. Modify the content security policy in `next.config.js` if you want to use any analytics provider or a commenting solution other than giscus.
    - 沒特別改動
-4. Personalize authors/default.md (main author)
-   - 關於我, 可以之後再補
-5. Modify projectsData.js (略)
-6. Modify headerNavLinks.js to customize navigation links
-   - 先移除 project, 之後有了再補
+4. Personalize `authors/default.md` (main author)
+   - 關於我，可以之後再補
+5. Modify `projectsData.js` (略)
+6. Modify `headerNavLinks.js` to customize navigation links
+   - 先移除 project，之後有了再補
 7. Add blog posts (略)
 8. Deploy on Vercel (略)
 
 ## 設計微調
 
-本來想做成 [Hugo Theme Hermit](https://github.com/Track3/hermit) 極簡風  
-但用 react 重刻一遍實在太費時了, 改成參考拼湊 [readme 範例](https://github.com/timlrx/tailwind-nextjs-starter-blog#examples)  
+本來想做成 [Hugo Theme Hermit](https://github.com/Track3/hermit) 極簡風
+
+但用 react 重刻一遍實在太費時了，改成參考拼湊 [readme 範例](https://github.com/timlrx/tailwind-nextjs-starter-blog#examples)
+
 以下列出幾個有改動的地方
 1. 調整色系
-   - 在 tailwind.config.js 找到 theme.extend.colors 調整 primary, gray 這兩個值
-2. 調整 Footer, 改成 one-liner
-3. 調整 Header (NavBar)
-   - 固定 NavBar 在最上方, 加入半透明效果
-4. 調整 MobileNav (因應第三條改動, 需要微調)
-5. 調整 ListLayout
-   - 增加 framer-motion
+   - 在 `tailwind.config.js` 找到 `theme`.`extend`.`colors` 調整 `primary`，`gray` 這兩個值
+2. 調整 `Footer.tsx`，改成 one-liner
+3. 調整 `LayoutWrapper.tsx` header (NavBar)
+   - 固定 NavBar 在最上方，加入半透明效果
+4. 調整 `MobileNav.tsx` (因應第三條改動，需要微調)
+5. 調整 `ListLayout.tsx`
+   - 增加 `framer-motion`
 
 # Hosting Service
 
-當初是 Vercel/ GitHub Pages 二選一, 本來想放在 GitHub 上, 好處可以少辦一個帳號  
-後來發現 GitHub Pages 預設走 Jekyll, 如要使用 Next.js 會需要額外設定  
-做一組收下巴運動後, 果斷使用 Vercel (next.js 親爹有加分)
+當初是 Vercel/ GitHub Pages 二選一，本來想放在 GitHub 上，好處可以少辦一個帳號
+
+後來發現 GitHub Pages 預設走 Jekyll，如要使用 Next.js 會需要額外設定
+
+做一組收下巴運動後，果斷使用 Vercel (next.js 親爹有加分)
 
 ## 技術步驟
 
-照著[官網文件](https://nextjs.org/learn/basics/deploying-nextjs-app)步驟做  
-走到第四步建置的時候會發生錯誤, 原因是 Vercel 會遵循 .eslintrc.js 裡的 rules  
-找到這行 'prettier': 'error'  
-把 prettier 告警層級 (warning level)  
-從 'error' 改成 'warning' 就能通過建置  
+照著[官網文件](https://nextjs.org/learn/basics/deploying-nextjs-app)步驟做
 
-平常用 localhost 開發不會觸動到 prettier warning rules  
-仔細一看 prettier 意見相當多, 連 class name 宣告順序都會抱怨  
-有恆心的人可以挑戰一個ㄧ個改, 我果斷放棄直接降低告警層級
+走到第四步建置的時候會發生錯誤，原因是 Vercel 會遵循 `.eslintrc.js` 裡的 rules
+
+- 找到這行 `'prettier': 'error'`
+- 把 `prettier` 告警層級 (warning level)
+- 從 `'error'` 改成 `'warning'` 就能通過建置
+
+平常用 `localhost` 開發不會觸動到 `prettier` warning rules
+
+仔細一看 `prettier` 意見相當多，連 class name 宣告順序都會抱怨
+
+有恆心的人可以挑戰一個ㄧ個改，我果斷放棄直接降低告警層級
 
 # 域名供應商
 
-打算 NameCheap, GoDaddy 二選一, 爬了一下文章   
-大部份文章都說 NameCheap 比較讚 (便宜 + free privacy guard)  
-其餘文章內容看起來都差不多, 雙開分頁直接選購比較  
-最後還是選擇 NameCheap, 因為 Cheap  
-這邊注意可以不用加購 https, 因為 Vercel 會附贈
+打算 NameCheap、GoDaddy 二選一，爬了一下文章
 
-## 將新域名加到 Vercel, 技術步驟
+大部份文章都說 NameCheap 比較讚 (便宜 + free privacy guard)
+
+其餘文章內容看起來都差不多，雙開分頁直接選購比較
+
+最後還是選擇 NameCheap，因為 Cheap
+
+要注意 Vercel 有內建 `https`了，NameCheap 這邊不用加購
+
+## 將新域名加到 Vercel，技術步驟
 
 1. 參考 Vercel 官網文件 [Custom Domains](https://vercel.com/docs/concepts/projects/custom-domains)
-1. 按照步驟產生各一組 "A Record" 和 "CName"
+1. 按照步驟產生各一組 `A Record` 和 `CName`  
 1. 接著去 NameCheap (domain provider) 新增這兩組資料
 1. 參考 NameCheap 官網文件 [How to Create a CNAME Record For Your Domain](https://www.namecheap.com/support/knowledgebase/article.aspx/9646/2237/how-to-create-a-cname-record-for-your-domain/)
-1. 先設定 "A Record" 再設定 "CName"
-1. A Record 與 CName 大同小異, 可以複製 CName 文章步驟
-1. TTL 我兩邊都設 Automatic
+1. 先設定 `A Record` 再設定 `CName`
+1. `A Record` 與 `CName` 大同小異，可以複製 `CName` 文章步驟
+1. `TTL` 我兩邊都設 `Automatic`
 1. 設定後 Vercel 那邊會自動 refresh
 1. 大約五分鐘內就可以用新域名開啟網頁了~
 
 ### 插曲
 
-1. 第一次開啟網頁需要手動敲 http (without s)
-1. 跑過一次後 https 會自動補上, 感恩 Vercel 讚嘆 Vercel!
-1. NameCheap 和 Vercel 預設都會加一組 redirect 把 johntao.one 轉到 www.johntao.one
+1. 第一次開啟網頁需要手動敲 `http` (without s)
+1. 跑過一次後 `https` 會自動補上，感恩 Vercel 讚嘆 Vercel！
+1. NameCheap 和 Vercel 預設都會加一組 redirect 把 `johntao.one` 轉到 `www.johntao.one`
    - 不清楚這樣設計原因為何
    - 如果兩邊設定相反可能發生遞迴
-   - 但預設是可行的, 不求甚解!
+   - 但預設是可行的，不求甚解！
 
 # 總結
 
 - 本文從技術角度記錄如何建立一個部落格
-- 首先介紹使用的網頁建置技術 (Jamstack)
-- 再依序介紹我選用的 Jamstack 技術 (Next.js)
-- 以及相關新手包與發布服務 (Vercel)
-- 最後再介紹域名供應商以及如何設定買好的域名 (NameCheap)
+- 首先介紹使用的網頁建置技術 --> Jamstack
+- 再依序介紹我選用的 Jamstack 技術 --> Next.js
+- 以及相關新手包與發布服務 --> Vercel
+- 最後再介紹域名供應商以及如何設定買好的域名 --> NameCheap
 
 ## 許願池
 
-- 這文章是第二版, 把一些參考資料和心路歷程閹割掉了, 如有讀者想看歡迎底下敲碗
-- 未來希望能實作 reference popup 的效果, 這樣就能隨心所欲的置入迷因和 buzzwords :D
-- 若對內文有什麼見解, 或希望未來看到什麼主題, 也歡迎在底下留言～
+- 這文章是第二版，把一些參考資料和心路歷程閹割掉了，如有讀者想看歡迎底下敲碗
+- 未來希望能實作 reference popup 的效果Ｆ，這樣就能隨心所欲的置入迷因和 buzzwords 😆
+- 若對內文有什麼見解，或希望未來看到什麼主題，也歡迎在底下留言～

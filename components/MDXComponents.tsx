@@ -4,6 +4,7 @@ import { useMDXComponent } from 'next-contentlayer/hooks'
 import { ComponentMap } from 'mdx-bundler/client'
 import { coreContent } from '@/lib/utils/contentlayer'
 import Image from './Image'
+import ImageWithCap from './ImageWithCap'
 import CustomLink from './Link'
 import TOCInline from './TOCInline'
 import Pre from './Pre'
@@ -28,6 +29,7 @@ const Wrapper = ({ layout, content, ...rest }: MDXLayout) => {
 
 export const MDXComponents: ComponentMap = {
   Image,
+  ImageWithCap,
   TOCInline,
   a: CustomLink,
   pre: Pre,

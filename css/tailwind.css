@@ -63,3 +63,13 @@ input:-webkit-autofill:focus {
 .slideOutDown {
   animation-name: slideOutDown
 }
+
+.override-nxtimg {
+  /* object-fit: contain; */
+  position: relative !important;
+  height: unset !important;
+}
+
+.override-nxtimg-parent > span {
+  position: unset !important;
+}
