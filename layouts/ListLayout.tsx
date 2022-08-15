@@ -62,7 +62,7 @@ export default function ListLayout({ posts, title, initialDisplayPosts = [], pag
             const { slug, date, title, summary, tags } = post
             return (
               <Link href={`/blog/${slug}`}>
-                <motion.li key={slug} className="py-12 px-4 flex group hover:bg-gray-100 dark:hover:bg-gray-800 bg-transparent bg-opacity-20 hover:rounded-xl" whileHover={{ scale: 1.02 }}>
+                <motion.li key={slug} className="py-12 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 hover:rounded-xl" whileHover={{ scale: 1.02 }}>
                   <article className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
                     <dl>
                       <dt className="sr-only">Published on</dt>

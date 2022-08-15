@@ -1,0 +1,169 @@
+---
+title: 部落格 CSS 問題動手修
+date: '2022-08-13'
+lastmod: '2022-08-13'
+tags: ['build-a-blog', 'blog-styles', 'css', 'tech-skills-basic']
+draft: false
+summary: '修正幾個版面錯誤，順便學習 css 基礎知識'
+images: []
+---
+
+適合閱讀對象
+
+- 具備基礎程式能力
+- 知道 css 但不熟悉的人
+
+---
+
+目標一：想把 Header navigation bar (NavBar) 固定最上面，如下圖
+
+<ImageWithCap
+   alt="Sticky HeaderNav"
+   src="/static/images/2022/sticky-header.gif"
+   cap="Image from [Thang Huu Vu](https://www.thvu.dev/blog/rebuild-bakia-prisma)"
+   width="692"
+   height="453"
+   />
+
+實際大概 `window.scrollY` 超過 800 NavBar 就收起來了
+
+![Sticky HeaderNav Failed](/static/images/2022/sticky-header-failed.gif)
+
+開始估狗調查 `sticky` 沒有運作的原因
+
+第一篇看到 StackOverflow [How does the "position: sticky;" property work?](https://stackoverflow.com/questions/43707076/how-does-the-position-sticky-property-work)
+
+拜讀了一下，留言大致講 `sticky` 必須搭配 `top: 0px`
+
+另外上層元素 (ancestor elements) 不能設定 `overflow:hidden` 或 `overflow:auto`
+
+檢查後發現，兩個雷我們都沒踩到，繼續估狗調查
+
+第二篇找到 webflow University [Creating a sticky sidebar](https://university.webflow.com/lesson/create-a-sticky-sidebar#troubleshooting-position-sticky)
+
+在 troubleshooting 的段落，提到若上層元素有設定高度，也可能造成 `sticky` 錯誤
+
+這次的雷看起來就有中了，檢查元素發現父層高度為 `892px`，而且文字顏色是灰的，所以是間接受到其他 style 規則影響  
+(白色文字表示直接套用 style 規則，如圖中 `box-sizing` 就是吃到 `*, :after, :before` 這組規則)
+
+![Inspect element height](/static/images/2022/inspect-element-height.png)
+
+接著回到 [Sticky NavBar 對照組](https://www.thvu.dev/blog/rebuild-bakia-prisma)檢查元素發現，對照組的 `height` 有 `5666.6px`
+
+可以確認問題就是出在這了，從觀察得知兩個父層都沒有設定高度，高度應該是由子層的內文長度所撐開
+
+`892px`這個值大約只有一個畫面長，遠小於一般文章長度 (一般文章通常要拉動卷軸，經過數個畫面長才會到底)
+
+可以推論子層套用到未知規則，限制自己以及父層的高度
+
+![Height problem suspect](/static/images/2022/height-problem-suspect.gif)
+
+經過一番探索，發現問題出在子層的下一層，觀察上圖發現本來高度應該往下伸長，實際卻被紫色的虛擬區塊截斷了
+
+將每個 class 開開關關，確認問題出在 `h-screen`，少了 `height: 100vh` 高度限制就取消了
+
+`sticky` 也能如期運作，所以 `100vh` 究竟為何物呢？
+
+根據 MDN [CSS values and units](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units#numbers_lengths_and_percentages) 是一種相對單位
+
+相對單位會因為對比物狀態變化，而改變單位的大小
+
+舉例
+- "父層字體大小"，單位大小隨 "父層字體大小" 而變化
+- "當前 viewport" (暫譯：用戶裝置視窗)，單位大小隨 "裝置視窗大小" 變化
+
+絕對單位像是 `cm`、`px` 沒有對比物，所以不論觀測條件或狀態，單位都是固定大小
+
+`vh` v 表示 viewport, h 代表 height, `1vh` 表示 1% 裝置視窗的高度
+
+`100vh` 代表 100% 裝置視窗的高度
+
+由此可知，這就是造成文章長度被限縮到 "一個畫面長" 的元兇～
+
+---
+
+目標二：修正文章清單寬度錯誤，如下圖
+
+![ListLayout width problem](/static/images/2022/listlayout-width-problem.png)
+
+解決此問題需要一點前情提要，"CSS box model" 所有 HTML element 都是由矩形盒子構成，如下圖
+
+![CSS box model](/static/images/2022/css-box-model.png)
+
+每個盒子又可切分為四層，從最內層藍色開始到最外層棕色
+
+分別是藍色 `content` (內容)、綠色 `padding` (內距)、黃色 `border` (邊框)、棕色 `margin` (外距)
+
+首先來觀察單一個 element (元素) 內容層的特性
+
+如下圖分別為：div 無文字 --> div 有文字 --> span 無文字 --> span 有文字
+
+![CSS box model content layer](/static/images/2022/css-box-model-content-layer.gif)
+
+- 綠色 `padding` 可忽略 (為了撐開盒子高度)
+- 藍色 `content` 這次觀察的主要目標
+- div `display` 預設 `block`，表現上會佔滿整行，下一個相鄰元素會換行排在下方
+- span `display` 預設 `inline`，不會佔滿整行，下一個相鄰元素緊靠在右側
+- div 就算沒有 `content` 也會撐開寬度佔滿整行
+- span 的寬度視內容長度而定
+
+接著來觀察 nested element (巢狀元素)，子(內)層放兩個元素，觀察父(外)層 `content` 的變化
+
+如下圖分別為：兩個 div --> 兩個 span --> 一個 span 接著一個 div
+
+![CSS box model content layer](/static/images/2022/css-box-model-content-layer2.gif)
+
+- 為了觀測方便，有把子層元素都加了一點高度
+- 父層不論子層放了什麼，`content` 寬度都是撐滿藍色
+
+由以上兩組結論可知，不論單一或巢狀元素，`content` 區塊都是填滿的藍色矩形，不會出現縮水的紫色矩形
+
+回到剛才的問題，顯然 `content` 寬度有被覆寫設定
+
+這邊直接講結論是父層 `display` 設到 `flex`，導致寬度沒有自然伸展
+
+`flex` 是一個大題目，有興趣深入的話可以參考[這篇介紹](https://ithelp.ithome.com.tw/articles/10267398)
+
+這邊我只講幾個基本特性
+- `flex` 專門設定在父層 (container)，用於排列、對齊、伸展子層項目
+- 預設行為是將所有子項目變成一列 `inline` 就像 `span`
+   - 收縮寬度到與內容長度一致 (DevTools 會把縮水的部分標為紫色)
+- 伸展是用權重的方式去計算，如設定三個子項目 1:2:1 就是將可用寬度切成四份再去配分
+
+只要把 `flex` 拿掉後問題就修正了～
+
+---
+
+結論
+
+第一個 bug 是 NavBar `sticky` 沒辦法正常運作，深入研究後發現是高度限制所導致
+
+並且學習了相對單位與絕對單位的差異，最後移除掉高度 `100vh` 規則就恢復正常了
+
+算是 `sticky` NavBar 與原始版新手包的設計有衝突，這邊暫時不去追溯為什麼原始版會需要用到 `100vh`
+
+第二個 bug 是 ListLayout 的寬度收縮造成版型跑掉，將每個 css class 開關切過一次後發現元兇是 `flex`
+
+查了定義後發現 `flex` 預設就會把子層項目收縮，為了進一步確認寬度收縮是不是特殊現象
+
+重新學習 css box model，並設計幾個簡單實驗，排列組合 `span`、`div` 以及有無文字
+
+觀察父層子層的 `content` 寬度變化，得出結論正常情況 DevTools 是觀察不到紫色收縮區塊
+
+只有套用特殊規則才會產生收縮 (如 `100vh` 高度收縮、`flex` 寬度收縮)
+
+---
+
+後記碎念
+
+ListLayout 問題是之前移植功能的時候，把別人的 class 也移進來所造成的
+
+回顧時發現原來對方已經把 html 結構魔改過，所以才需要 flex 去做對齊
+
+也因此深入去瞭解 `flex`、`span`、`div` 對於父層子層寬度的影響
+
+對於不熟網頁設計的工程師來說，沒辦法快速 debug 的根本原因，往往是少知道了這些基本性質 😓
+
+這是第一次嘗試放動圖在文章裡，算是很好的呈現方式 (比起截圖或另開連結請讀者自己看)
+
+目前都是用螢幕錄影加轉檔程式產生 gif，之後有發現更快方法再來分享 😆
