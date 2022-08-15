@@ -19,7 +19,7 @@ images: []
 
 <ImageWithCap
    alt="Sticky HeaderNav"
-   src="/static/images/2022/sticky-header.gif"
+   src="https://i.imgur.com/GHJz9Il.gif"
    cap="Image from [Thang Huu Vu](https://www.thvu.dev/blog/rebuild-bakia-prisma)"
    width="692"
    height="453"
@@ -27,7 +27,7 @@ images: []
 
 實際大概 `window.scrollY` 超過 800 NavBar 就收起來了
 
-![Sticky HeaderNav Failed](/static/images/2022/sticky-header-failed.gif)
+![Sticky HeaderNav Failed](https://i.imgur.com/cUuqebW.gif)
 
 開始估狗調查 `sticky` 沒有運作的原因
 
@@ -56,7 +56,7 @@ images: []
 
 可以推論子層套用到未知規則，限制自己以及父層的高度
 
-![Height problem suspect](/static/images/2022/height-problem-suspect.gif)
+![Height problem suspect](https://i.imgur.com/cUuqebW.gif)
 
 經過一番探索，發現問題出在子層的下一層，觀察上圖發現本來高度應該往下伸長，實際卻被紫色的虛擬區塊截斷了
 
@@ -98,7 +98,7 @@ images: []
 
 如下圖分別為：div 無文字 --> div 有文字 --> span 無文字 --> span 有文字
 
-![CSS box model content layer](/static/images/2022/css-box-model-content-layer.gif)
+![CSS box model content layer](https://i.imgur.com/AwTJpw7.gif)
 
 - 綠色 `padding` 可忽略 (為了撐開盒子高度)
 - 藍色 `content` 這次觀察的主要目標
@@ -111,7 +111,7 @@ images: []
 
 如下圖分別為：兩個 div --> 兩個 span --> 一個 span 接著一個 div
 
-![CSS box model content layer](/static/images/2022/css-box-model-content-layer2.gif)
+![CSS box model content layer](https://i.imgur.com/ewYgQ0R.gif)
 
 - 為了觀測方便，有把子層元素都加了一點高度
 - 父層不論子層放了什麼，`content` 寬度都是撐滿藍色

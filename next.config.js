@@ -72,6 +72,9 @@ module.exports = withContentlayer(
         },
       ]
     },
+    images: {
+      domains: ['imgur.com','i.imgur.com'],
+    },
     webpack: (config, { dev, isServer }) => {
       config.module.rules.push({
         test: /\.svg$/,
