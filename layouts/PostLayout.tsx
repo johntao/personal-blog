@@ -6,9 +6,11 @@ import Image from '@/components/Image'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import Comments from '@/components/comments'
+import ViewCounter from '@/components/ViewCounter'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import { CoreContent } from '@/lib/utils/contentlayer'
 import { ReactNode } from 'react'
+import { HiOutlinePencil, HiOutlineClock, HiOutlineEye } from 'react-icons/hi'
 import type { Blog, Authors } from 'contentlayer/generated'
 
 const editUrl = (slug) => `${siteMetadata.siteRepo}/blob/master/data/blog/${slug}`
@@ -33,7 +35,7 @@ interface Props {
 }
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: Props) {
-  const { slug, date, title, tags } = content
+  const { slug, date, title, tags, readingTime } = content
 
   return (
     <SectionContainer>
@@ -59,6 +61,21 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               </dl>
               <div>
                 <PageTitle>{title}</PageTitle>
+              </div>
+              <div className="flex justify-center gap-5 py-4">
+                <span className="flex items-center gap-1.5">
+                  <HiOutlinePencil className="h-5 w-5" />
+                  {readingTime.words} words
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineClock className="h-5 w-5" />
+                  {readingTime.text}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <HiOutlineEye className="h-5 w-5" />
+                  <ViewCounter className="ml-0" slug={slug} blogPage={true} />
+                  <div className="-ml-0.5">Views</div>
+                </span>
               </div>
             </div>
           </header>
