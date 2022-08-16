@@ -12,6 +12,7 @@ import { CoreContent } from '@/lib/utils/contentlayer'
 import { ReactNode } from 'react'
 import { HiOutlinePencil, HiOutlineClock, HiOutlineEye } from 'react-icons/hi'
 import type { Blog, Authors } from 'contentlayer/generated'
+import useViewCounter from '@/lib/hooks/useViewCounter'
 
 const editUrl = (slug) => `${siteMetadata.siteRepo}/blob/master/data/blog/${slug}`
 const discussUrl = (slug) =>
@@ -36,6 +37,7 @@ interface Props {
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: Props) {
   const { slug, date, title, tags, readingTime } = content
+  // const viewCount = useViewCounter(slug);
 
   return (
     <SectionContainer>
@@ -74,6 +76,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                 <span className="flex items-center gap-1.5">
                   <HiOutlineEye className="h-5 w-5" />
                   <ViewCounter className="ml-0" slug={slug} blogPage={true} />
+                  {/* {viewCount} */}
                   <div className="-ml-0.5">Views</div>
                 </span>
               </div>
