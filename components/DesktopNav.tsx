@@ -21,7 +21,7 @@ const DesktopNav = ({ onToggleNav }) => {
   useEffect(() => {
     let lastScrollPosition = window.pageYOffset;
     const handleScroll = () => { 
-      let currentScrollPosition = Math.max(window.pageYOffset, 0);
+      const currentScrollPosition = Math.max(window.pageYOffset, 0);
       if (currentScrollPosition > lastScrollPosition)
         setIsScrollDown(true)
       else

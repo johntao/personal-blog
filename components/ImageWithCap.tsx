@@ -41,7 +41,7 @@ const ImageWithCap = ({ alt, src, cap, width, height }: ImageCapProps) => {
         // onLoad={e => e.currentTarget.style.position = 'relative'}
         // style={{ position: style.position, height: style.height }}
         />}
-      <figcaption><ImageCap matches={[...cap.matchAll(/[\w ]+|\[([^\]]+)\]\(([^\)]+)\)/g)]} /></figcaption>
+      <figcaption><ImageCap matches={[...cap.matchAll(/[\w ]+|\[([^\]]+)\]\(([^)]+)\)/g)]} /></figcaption>
     </figure>)
 }
 

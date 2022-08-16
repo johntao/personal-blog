@@ -10,8 +10,8 @@ type VC_Props = {
 }
 
 const ViewCounter = ({ slug, className, blogPage = false }: VC_Props) => {
-  let { data } = useSWR<{ total: unknown }>(`/api/views/${slug}`, fetcher)
-  let views = new Number(data?.total)
+  const { data } = useSWR<{ total: unknown }>(`/api/views/${slug}`, fetcher)
+  const views = new Number(data?.total)
 
   useEffect(() => {
     const registerView = () => fetch(`/api/views/${slug}`, { method: 'POST', })
