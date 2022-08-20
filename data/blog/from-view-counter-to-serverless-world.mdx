@@ -1,10 +1,10 @@
 ---  
-title: 部落格 CSS 問題動手修
+title: '從文章點擊次數功能，進到無伺服器運算新世界'
 date: '2022-08-20'
 lastmod: '2022-08-20'
 tags: ['build-a-blog', 'blog-functions', 'jamstack', 'serverless', 'tech-skills-basic']
 draft: false
-summary: '修正幾個版面錯誤，順便學習 css 基礎知識'
+summary: '完整介紹如何在 Next.Js 使用 serverless 資料庫，實作文章瀏覽人次功能'
 images: []
 ---
 
@@ -13,6 +13,8 @@ images: []
 - 具備基礎程式能力
 - 對 serverless 感興趣
 - 閱讀過前篇[Jamstack 介紹](https://www.johntao.one/blog/build-a-blog-using-next-js)，想繼續打磨擴充 next.js 功能
+
+#
 
 # 前言
 
@@ -98,9 +100,10 @@ Vitess 技術驅動了許多需要高擴展 (Scalability)、高性能 (Performan
 
 先在 terminal 依序安裝 `npm install prisma`、`npm install @prisma/client`
 
-接著執行 `npx prisma init`，開啟檔案專案根目錄 `.env` 檔案
+接著執行 `npx prisma init`，開啟檔案專案根目錄 `.env` 檔案  
+(.env 屬於敏感資訊檔案，記得加入 .gitignore)
 
-加入這行 `DATABASE_URL="mysql://root@127.0.0.1:3309/personal-blog"`
+調整成這樣 `DATABASE_URL="mysql://root@127.0.0.1:3309/personal-blog"`
 
 開啟檔案 `prisma/schema.prisma`，修改如下
 
@@ -127,16 +130,38 @@ model views {
 接著執行 `npx prisma db push`，如此就能將 table schema 更新到先前連線的 `localhost:3309` db 上  
 (也就是 database: personal-blog/ branch: dev)
 
+到 dev 分支 schema tab 檢查一下，確認剛剛宣告的 model 的確更新上去了，如下圖
+
+![PlanetScale, dev-branch-schema](/static/images/2022/dev-branch-schema.png)
+
 若一切看起來都順利，就可以執行 `pscale deploy-request create personal-blog dev`，將 dev 分支的改動合併到 main  
 (就跟 GitHub pull request 一樣！)
 
-回到 PlanetScale Dashboard 點擊確認，就完成 main 的部署了
+如果 deploy-request 看到這樣的錯誤訊息 --> `Error: Database branch main is not a production branch.`
 
-接著執行 `pscale connect personal-blog main --port 3309`，把 localhost 連線指到 main 分支上
+表示 CLI 在抱怨 `main` 分支沒有被提拔為 production branch，所以不能進行 `deploy-request`
+
+這時候要先回到 dashboard 選到 `main`，然後點擊 "Promote a branch to production"，再點擊 "Promote branch" 如下圖
+
+![PlanetScale, promote-branch-main](/static/images/2022/promote-branch-main.png)
+
+將 main 提升成 production branch 後，就可以再次執行 `pscale deploy-request create personal-blog dev`
+
+執行後會出現一個 deploy-request 連結，點開後確認無誤就可以點擊左下角 "Deploy changes" 進行部署，如下圖
+
+![PlanetScale, deploy-request](/static/images/2022/deploy-request.png)
+
+完成部署後如果剛剛停留的頁面還沒關掉，會溫馨提示可以刪除 dev branch，就隨手點擊 "Delete branch" 吧
+
+這時到 main branch 檢查 schema，可以看到 model 確實更新進來了
+
+接著我們就可以執行 `pscale connect personal-blog main --port 3309`，把 localhost 連線指到 main 分支上
 
 如此就把 table schema 的部分搞定了，下一步開始進行 API 開發
 
-補充：如有需要先進行資料測試的話，可以執行 `npx prisma studio` 透過 UI 直接操作資料表
+補充：如有需要先進行資料測試的話，可以執行 `npx prisma studio` 透過 UI 直接操作資料表，如下圖
+
+![PlanetScale, deploy-request](/static/images/2022/prisma-studio.png)
 
 # 建立 CRUD API
 
@@ -272,7 +297,7 @@ export default async function Fetcher(input: RequestInfo | URL, init?: RequestIn
    - `isBlogPost` 帶入 `true` (會呼叫 `POST` 更新瀏覽人次)
    - 宣告範例 --> `<ViewCounter className="ml-0" slug={slug} isBlogPage={true} />`
 
-最後成品如下圖 🎉🎉
+這樣就大功告成啦 🎉🎉
 
 # 總結
 
