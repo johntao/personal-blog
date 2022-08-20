@@ -1,0 +1,310 @@
+---  
+title: 部落格 CSS 問題動手修
+date: '2022-08-20'
+lastmod: '2022-08-20'
+tags: ['build-a-blog', 'blog-functions', 'jamstack', 'serverless', 'tech-skills-basic']
+draft: false
+summary: '修正幾個版面錯誤，順便學習 css 基礎知識'
+images: []
+---
+
+# 適合閱讀對象
+
+- 具備基礎程式能力
+- 對 serverless 感興趣
+- 閱讀過前篇[Jamstack 介紹](https://www.johntao.one/blog/build-a-blog-using-next-js)，想繼續打磨擴充 next.js 功能
+
+# 前言
+
+一切都要從這張圖說起
+
+<ImageWithCap
+   alt="Reading time, view counter"
+   src="/static/images/2022/readingtime-viewcounter.png"
+   cap="Image from [Parth Desai](https://musing.vercel.app/blog/WWDC22)"
+   />
+
+圖中黃色底線標示區域，分別有文章字數、閱讀時間與瀏覽人次，看起來就很厲害
+
+本來以為這功能很好實作，新手包應該附有接口，我們只需要接通或打開功能
+
+實際上對一半，閱讀時間與字數確實是既有功能，只是沒串接到前端顯示，但瀏覽人次就不是這麼一回事了  
+（本篇文章暫不討論如何接通閱讀時間與字數）
+
+還記得上篇文章[介紹 Jamstack](https://www.johntao.one/blog/build-a-blog-using-next-js#jamstack-%E5%B9%BE%E5%80%8B%E5%B8%B8%E8%A6%8B%E7%9A%84%E5%85%83%E4%BB%B6) 時，有提到 JAM 的 A (API) 不是必要元素嗎？
+
+瀏覽人次在這邊就需要實作完整的 API，拆解後大致上會有這些工作項目
+
+- 建立一個 db (沒錯，就是一個扎實的 database)
+   - 建立資料表，欄位分別是 "文章url" 與 "瀏覽人次"
+- 使用能打到 db 的 ORM framework
+   - 建立 ORM 所需 schema
+- 建立 CRUD API (這裡就是 JAM 的 A)
+   - 執行 ORM 方法對 db 進行 CRUD 操作
+- 建立 ViewCounter 元件
+   - 透過 hooks 去打剛剛宣告的 API
+- 將 ViewCounter 元件加進相關 Layout
+
+以下按照這些步驟進行講解
+
+# 建立資料庫
+
+開始介紹本篇文章的主角 [PlanetScale](https://planetscale.com/)
+
+PlanetScale 是一套基於 [Vitess](https://vitess.io/) 的新型 DBaaS (Database as Service) 服務
+
+可以在幾秒鐘的時間就生成一個資料庫，並省去使用者煩腦連線管理等問題
+
+Vitess 技術驅動了許多需要高擴展 (Scalability)、高性能 (Performance)、高運作時間 (Uptime) 的 hyperscale 網站
+
+此外 PlanetScale 還加入了像 git 一樣的分支概念，達到無縫、無阻塞 (non-blocking) 的方式更新資料庫 (database migrations)
+
+在開始之前，可先去 PlanetScale 註冊帳號，我是直接使用 GitHub 註冊
+
+註冊後接著要下載 [PlanetScale CLI 工具](https://planetscale.com/features/cli)，以便於 local 端開發測試，CLI 主要有下列幾個功能
+
+- 用 proxy 方式連到 PlanetScale db
+- 建立 db 分支
+- 提交 schema 部署請求
+
+下圖為 PlanetScale 新註冊帳號的畫面，看完導覽後點擊左下方 "Create your first database"
+
+![PlanetScale homepage](https://i.imgur.com/145Q925.gif)
+
+接著命名你的資料庫，這裡我取名為 `personal-blog`，然後選擇離自己國家最近的伺服器位置，再點擊 "Create Database" 如下圖
+
+![PlanetScale create database](/static/images/2022/create-database.png)
+
+這樣就完成資料庫新增了！接下來點選畫面右上角 "Connect" 產生 db 連線字串與密碼，如下圖
+
+![PlanetScale create database](/static/images/2022/planetscale-dashboard.png)
+
+產生帳號密碼後要自行記下來，一旦離開畫面密碼就再也無法顯示出來
+
+如果不幸跳過視窗的話也沒關係，只要重新產生一組新密碼，記下來之後再把舊密碼刪除就 ok 了
+
+在帳密畫面下方，連接方法選擇 "Prisma" 如下圖，記下 `DATABASE_URL` 這組設定，之後會需要在 Vercel 設成環境變數
+(Vercel 環境變數可參考之前 [giscus 文章介紹#套用-giscus-api-與設定-vercel-環境變數](/blog/how-to-setup-giscus#%E5%A5%97%E7%94%A8-giscus-api-%E8%88%87%E8%A8%AD%E5%AE%9A-vercel-%E7%92%B0%E5%A2%83%E8%AE%8A%E6%95%B8))
+
+![PlanetScale your generated password](/static/images/2022/your-generated-password.png)
+
+接著打開 terminal 執行 `pscale auth login`，此時會自動開啟瀏覽器網頁進行驗證
+
+通過認證後執行 `pscale branch create personal-blog dev`，就會從預設的 `main` 拉出一支 `dev` 分支
+
+這時再執行 `pscale connect personal-blog dev --port 3309`，就可以透過 `localhost:3309` 直接連到雲端的資料庫了～
+
+# 設定 ORM framework (schema migration)
+
+先在 terminal 依序安裝 `npm install prisma`、`npm install @prisma/client`
+
+接著執行 `npx prisma init`，開啟檔案專案根目錄 `.env` 檔案
+
+加入這行 `DATABASE_URL="mysql://root@127.0.0.1:3309/personal-blog"`
+
+開啟檔案 `prisma/schema.prisma`，修改如下
+
+```
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model views {
+  slug  String @id @db.VarChar(128)
+  count BigInt @default(1)
+}
+```
+
+在這裡我們宣告了一組 model `views`，用於記錄每一篇文章的瀏覽人次 (`slug`即文章 url/ `count`即瀏覽人次)
+
+接著執行 `npx prisma db push`，如此就能將 table schema 更新到先前連線的 `localhost:3309` db 上  
+(也就是 database: personal-blog/ branch: dev)
+
+若一切看起來都順利，就可以執行 `pscale deploy-request create personal-blog dev`，將 dev 分支的改動合併到 main  
+(就跟 GitHub pull request 一樣！)
+
+回到 PlanetScale Dashboard 點擊確認，就完成 main 的部署了
+
+接著執行 `pscale connect personal-blog main --port 3309`，把 localhost 連線指到 main 分支上
+
+如此就把 table schema 的部分搞定了，下一步開始進行 API 開發
+
+補充：如有需要先進行資料測試的話，可以執行 `npx prisma studio` 透過 UI 直接操作資料表
+
+# 建立 CRUD API
+
+首先要建立一個檔案 `lib/prisma.ts`，程式如下
+
+``` typescript
+import { PrismaClient } from '@prisma/client'
+
+// PrismaClient is attached to the `global` object in development to prevent
+// exhausting your database connection limit.
+// Learn more:
+// https://pris.ly/d/help/next-js-best-practices
+
+let prisma
+
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient()
+} else {
+  if (!global.prisma) {
+    global.prisma = new PrismaClient()
+  }
+  prisma = global.prisma
+}
+
+export default prisma
+
+```
+
+這段程式目的在於重複使用 PrismaClient 物件，如此可避免每次 request 都建立新的 connection
+
+接著建立 file `pages/api/views/[slug].ts`
+
+``` typescript
+import prisma from 'lib/prisma'
+import { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const slug = req.query.slug.toString()
+    
+    if (req.method === 'POST') {
+      const upsert = await prisma.views.upsert({
+        where: { slug },
+        create: { slug, },
+        update: {
+          count: { increment: 1, },
+        },
+      })
+
+      return res.status(200).json({ total: upsert.count.toString(), })
+    }
+
+    if (req.method === 'GET') {
+      const views = await prisma.views.findUnique({
+        where: { slug, },
+      })
+
+      return res.status(200).json({ total: views?.count?.toString?.() || 0 })
+    }
+  } catch (e) {
+    return res.status(500).json({ message: e.message })
+  }
+}
+
+```
+
+這段程式建立一組 API，slug 為文章 URL
+
+- POST /api/views/\[slug\]，新增 (count=1) 或修改 (count++) 瀏覽人次
+- GET /api/views/\[slug\]，讀取文章瀏覽人次
+
+建好之後就可以用 `http://localhost:3000/api/views` 測試囉～  
+(除了 API 也可以用先前提到的 `npx prisma studio` 檢查資料)
+
+# 建立 ViewCounter 元件
+
+新建檔案 `components/ViewCounter.tsx`，程式如下
+
+``` tsx
+import { useEffect } from 'react'
+import useSWR from 'swr'
+import fetcher from 'lib/utils/fetcher'
+
+type ViewCounterProps = {
+  slug: string
+  className: string
+  isBlogPage?: boolean
+}
+
+const ViewCounter = ({ slug, className, isBlogPage = false }: ViewCounterProps) => {
+  const { data } = useSWR<{ total: unknown }>(`/api/views/${slug}`, fetcher)
+  const views = new Number(data?.total)
+
+  useEffect(() => {
+    if (isBlogPage) fetch(`/api/views/${slug}`, { method: 'POST', })
+  }, [isBlogPage, slug])
+
+  return <span className={className}>{`${views > 0 ? views.toLocaleString() : '–––'}`}</span>
+}
+
+export default ViewCounter
+```
+
+這段程式會產生一個 ViewCounter Component，props 分別有下列功能
+- `slug` 由呼叫端傳入文章 url，再去打先前定義好的瀏覽人次 api
+- `className` 由呼叫端決定 Componenet css class
+- `isBlogPage` 只有進入文章內容才會打 `POST` api，反之在列表頁就不會打 `POST`，所以不會增加瀏覽人次
+
+此外這裡還定義了兩個 hook，`useEffect` 是每次 Component (重新)渲染觸發，`useSWR` 則是 API 值有變動時觸發
+
+其中 `swr` 需安裝舊版本 1.1.2，若安裝較新版本會出現詭異的 [react component 錯誤](https://stackoverflow.com/questions/72061576/useswr-crashes-react-component)  
+(撰文時的最新版是 1.3.0)  
+(安裝指令: `npm i swr@1.1.2`)
+
+`lib/utils/fetcher` 是自定義的簡單 utility function，程式如下
+
+``` typescript
+export default async function Fetcher(input: RequestInfo | URL, init?: RequestInit) {
+  const res = await fetch(input, init)
+  return res.json()
+}
+```
+
+# 將 ViewCounter 元件加進相關 Layout
+
+最後一步把 ViewCounter 加到 `layouts/ListLayout.tsx`、`layouts/PostLayout.tsx` 就完成了
+
+- `ListLayout.tsx` 列表佈局
+   - `isBlogPost` 用預設值 `false` (不會呼叫 `POST` 更新瀏覽人次)
+   - 宣告範例 --> `<ViewCounter className="mx-1" slug={slug} />`
+
+- `PostLayout.tsx` 本文佈局
+   - `isBlogPost` 帶入 `true` (會呼叫 `POST` 更新瀏覽人次)
+   - 宣告範例 --> `<ViewCounter className="ml-0" slug={slug} isBlogPage={true} />`
+
+最後成品如下圖 🎉🎉
+
+# 總結
+
+本來只是想加入文章瀏覽人次功能，卻意外的踏上 serverless DBaaS 旅程
+
+首先我們註冊了 PlanetScale 帳號，建立一個 MySQL database
+
+再使用 Prisma framework 串接 PlanetScale，透過 framework 更新資料表結構 (table schema)
+
+接著建立一組 Next.Js API，通過 Prisma 去讀取/ 更新文章瀏覽人次
+
+然後建立 ViewCounter component，運用 `useSWR`/ `useEffect` 兩個 hook 去呼叫 API
+
+最後把 ViewCounter 加到相關 Layout 完成了整個功能開發
+
+# 後記
+
+整個開發體驗算是很新奇，尤其 pscale CLI 可以用 localhost proxy 到雲端，甚至做 db branches
+
+另外 prisma 也算是成熟的 ORM framework，除了 db 連線、schema migration、CRUD 等基本功能
+
+還提供了 `npx prisma studio` 網頁介面，讓開發人員可以對資料表直接進行操作
+
+相信如果讀者和我一樣，過去只有傳統 web solution 經驗，也會有進入魔法森林的感覺 🦄🦄
+
+但新東西伴隨的缺點就是資料少，debug 靠自己，像是前面提到 `useSWR` react componenet 錯誤就花費了很多時間
+
+因為錯誤訊息跟 `swr` 沒有直接關係，把錯誤訊息拿去估狗反而會往 "錯誤" 的方向鑽
+
+最後是一行一行 debug 才知道是 `swr` 在搞鬼，所幸 SO 有相關討論，就更確定降版能解決問題
+
+# 參考資料
+
+- David Parks: [Deploying a PlanetScale, Next.js & Prisma App to Vercel](https://davidparks.dev/blog/planetscale-deployment-with-prisma/#setup)
+- Parth Desai: [GitHub, ycoder2000 / blog](https://github.com/pycoder2000/blog)

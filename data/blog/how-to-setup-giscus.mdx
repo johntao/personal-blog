@@ -8,19 +8,19 @@ summary: '逐步介紹在 next.js blog starter 要如何串接 giscus 留言板�
 images: []
 ---
 
-適合閱讀對象
+# 適合閱讀對象
 
 - 具備基礎程式能力
 - 已經架好 next.js blog 但還沒設定留言板的你
 - 聽過 disqus or giscus 服務但都沒串接過的你
 
----
+#
+
+# 前言 (什麼是 giscus)
 
 本站使用 [next.js blog starter pack](https://github.com/timlrx/tailwind-nextjs-starter-blog) 預設有提供 disqus/ giscus 兩種留言板服務的接口
 
 這邊暫不討論 disqus，果斷選用 giscus，因為 github 是世界上最大的工程師(~~同性~~)交友網站
-
----
 
 giscus 是基於 __GitHub Discussions__ 的開源留言板服務
 
@@ -32,11 +32,9 @@ giscus 是基於 __GitHub Discussions__ 的開源留言板服務
 - 即時同步 GitHub Discussions 資料更動
 - 支援本地架設服務 (Self-hosted)
 
----
+#
 
-以下開始正文
-
----
+# giscus 安裝條件 (install prerequisite)
 
 一開始什麼都沒設定時，點擊 __Load Comments__ 會出現錯誤訊息 __An error occurred: giscus is not installed on this repository__
 
@@ -62,7 +60,7 @@ giscus 是基於 __GitHub Discussions__ 的開源留言板服務
 
 依照內文步驟開啟庫的 Discussions 功能
 
----
+# 設定 giscus (configuration)
 
 回到 giscus app 頁面輸入你的使用者名稱和庫名，若步驟都正確執行，會出現通過檢核的提示 (如下圖)
 
@@ -86,7 +84,9 @@ giscus 是基於 __GitHub Discussions__ 的開源留言板服務
 
 ![Giscus app, Enable giscus](/static/images/2022/enable-giscus.png)
 
----
+#
+
+# 套用 giscus api 與設定 Vercel 環境變數
 
 理論上這裡的 script 是給開發者放在網頁上，執行後就會打通 giscus 服務，然後留言板
 
@@ -121,7 +121,9 @@ giscusConfig: {
 
 ![Vercel, Environment variables all set](/static/images/2022/vercel-environment-variables.png)
 
----
+#
+
+# Troubleshooting
 
 理論上到這就大功告成了，但開啟留言板後依然出現錯誤
 
@@ -148,9 +150,7 @@ Url 中出現迷樣的 `undefined`
 
 把這行補上後，就打完收工啦
 
----
-
-後記
+# 後記
 
 目前我們用的 #contentlayer 分支，雖然有 typescript 很香，但也落後主幹 371 個 commits (如下圖)
 

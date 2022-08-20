@@ -2,24 +2,19 @@ import { useEffect } from 'react'
 import useSWR from 'swr'
 import fetcher from 'lib/utils/fetcher'
 
-
-type VC_Props = {
+type ViewCounterProps = {
   slug: string
   className: string
-  blogPage?: boolean
+  isBlogPage?: boolean
 }
 
-const ViewCounter = ({ slug, className, blogPage = false }: VC_Props) => {
+const ViewCounter = ({ slug, className, isBlogPage = false }: ViewCounterProps) => {
   const { data } = useSWR<{ total: unknown }>(`/api/views/${slug}`, fetcher)
   const views = new Number(data?.total)
 
   useEffect(() => {
-    const registerView = () => fetch(`/api/views/${slug}`, { method: 'POST', })
-
-    if (blogPage) {
-      registerView()
-    }
-  }, [blogPage, slug])
+    if (isBlogPage) fetch(`/api/views/${slug}`, { method: 'POST', })
+  }, [isBlogPage, slug])
 
   return <span className={className}>{`${views > 0 ? views.toLocaleString() : '–––'}`}</span>
 }
