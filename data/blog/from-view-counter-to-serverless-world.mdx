@@ -8,15 +8,13 @@ summary: '完整介紹如何在 Next.Js 使用 serverless 資料庫，實作文�
 images: []
 ---
 
-# 適合閱讀對象
+## 適合閱讀對象
 
 - 具備基礎程式能力
 - 對 serverless 感興趣
-- 閱讀過前篇[Jamstack 介紹](https://www.johntao.one/blog/build-a-blog-using-next-js)，想繼續打磨擴充 next.js 功能
+- 閱讀過前篇 [Jamstack 介紹](https://www.johntao.one/blog/build-a-blog-using-next-js)，想繼續打磨擴充 next.js 功能
 
-#
-
-# 前言
+## 前言
 
 一切都要從這張圖說起
 
@@ -49,7 +47,7 @@ images: []
 
 以下按照這些步驟進行講解
 
-# 建立資料庫
+## 建立資料庫
 
 開始介紹本篇文章的主角 [PlanetScale](https://planetscale.com/)
 
@@ -96,7 +94,7 @@ Vitess 技術驅動了許多需要高擴展 (Scalability)、高性能 (Performan
 
 這時再執行 `pscale connect personal-blog dev --port 3309`，就可以透過 `localhost:3309` 直接連到雲端的資料庫了～
 
-# 設定 ORM framework (schema migration)
+## 設定 ORM framework (schema migration)
 
 先在 terminal 依序安裝 `npm install prisma`、`npm install @prisma/client`
 
@@ -163,7 +161,7 @@ model views {
 
 ![PlanetScale, deploy-request](/static/images/2022/prisma-studio.png)
 
-# 建立 CRUD API
+## 建立 CRUD API
 
 首先要建立一個檔案 `lib/prisma.ts`，程式如下
 
@@ -236,7 +234,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 建好之後就可以用 `http://localhost:3000/api/views` 測試囉～  
 (除了 API 也可以用先前提到的 `npx prisma studio` 檢查資料)
 
-# 建立 ViewCounter 元件
+## 建立 ViewCounter 元件
 
 新建檔案 `components/ViewCounter.tsx`，程式如下
 
@@ -285,7 +283,7 @@ export default async function Fetcher(input: RequestInfo | URL, init?: RequestIn
 }
 ```
 
-# 將 ViewCounter 元件加進相關 Layout
+## 將 ViewCounter 元件加進相關 Layout
 
 最後一步把 ViewCounter 加到 `layouts/ListLayout.tsx`、`layouts/PostLayout.tsx` 就完成了
 
@@ -299,7 +297,7 @@ export default async function Fetcher(input: RequestInfo | URL, init?: RequestIn
 
 這樣就大功告成啦 🎉🎉
 
-# 總結
+## 總結
 
 本來只是想加入文章瀏覽人次功能，卻意外的踏上 serverless DBaaS 旅程
 
@@ -313,7 +311,7 @@ export default async function Fetcher(input: RequestInfo | URL, init?: RequestIn
 
 最後把 ViewCounter 加到相關 Layout 完成了整個功能開發
 
-# 後記
+## 後記
 
 整個開發體驗算是很新奇，尤其 pscale CLI 可以用 localhost proxy 到雲端，甚至做 db branches
 
@@ -329,7 +327,7 @@ export default async function Fetcher(input: RequestInfo | URL, init?: RequestIn
 
 最後是一行一行 debug 才知道是 `swr` 在搞鬼，所幸 SO 有相關討論，就更確定降版能解決問題
 
-# 參考資料
+## 參考資料
 
 - David Parks: [Deploying a PlanetScale, Next.js & Prisma App to Vercel](https://davidparks.dev/blog/planetscale-deployment-with-prisma/#setup)
 - Parth Desai: [GitHub, ycoder2000 / blog](https://github.com/pycoder2000/blog)

@@ -30,7 +30,7 @@ module.exports = {
       },
       fontFamily: {
         //@ts-ignore
-        sans: ['InterVariable', ...defaultTheme.fontFamily.sans],
+        sans: ['Sora', '"Noto Sans TC"', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         primary: colors.sky,
@@ -41,6 +41,8 @@ module.exports = {
         DEFAULT: {
           css: {
             color: theme('colors.gray.700'),
+            lineHeight: 1.9,
+            fontSize: '1.125rem',
             a: {
               color: theme('colors.primary.500'),
               '&:hover': {
@@ -55,6 +57,7 @@ module.exports = {
             },
             h2: {
               fontWeight: '700',
+              marginTop: '1em',
               letterSpacing: theme('letterSpacing.tight'),
               color: theme('colors.gray.900'),
             },

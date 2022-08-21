@@ -8,7 +8,7 @@ summary: '介紹 Jamstack 技術，分享建立一個部落格，技術面會有
 images: []
 ---
 
-# TOC
+## TOC
 
 | 內文大綱                                            | TL;DR                                                                                  |
 |-----------------------------------------------------|----------------------------------------------------------------------------------------|
@@ -19,7 +19,7 @@ images: []
 | [Hosting Service](#Hosting-Service)                 | Vercel                                                                                 |
 | [域名供應商](#域名供應商)                           | NameCheap                                                                              |
 
-# 適合閱讀對象
+## 適合閱讀對象
 
 
 - 具備基礎程式能力
@@ -27,9 +27,7 @@ images: []
 - 想使用非 CMS 技術架站的人
 - 沒學過 react 想做中學的人  
 
-#
-
-# 網頁建置技術
+## 網頁建置技術
 
 JAMstack，一種 (pre-built) 靜態網頁建置技術，由以下三元素所構成
 
@@ -37,7 +35,7 @@ JAMstack，一種 (pre-built) 靜態網頁建置技術，由以下三元素所�
 - __A__: API (各種第三方服務)
 - __M__: Markup (由 __static generator__ 產生的靜態頁面)
 
-## 對比其他常見網站 solution stack
+### 對比其他常見網站 solution stack
 
 <ImageWithCap
    alt="對比其他常見網站 solution stack"
@@ -51,7 +49,7 @@ JAMstack，一種 (pre-built) 靜態網頁建置技術，由以下三元素所�
 
 此外還可以用 GitHub Pages、Netlify、Vercel 等服務免費部署，省的考慮租賃機器或站台等麻煩事！
 
-## 對比傳統網站建置架構
+### 對比傳統網站建置架構
 
 <ImageWithCap
    alt="對比傳統網站建置架構"
@@ -65,7 +63,7 @@ JAMstack，一種 (pre-built) 靜態網頁建置技術，由以下三元素所�
 
 沒有套用前端框架的情況下，Client --> IIS (WebServer) --> Database，只會有一個 server
 
-## JAMstack 幾個常見的元件
+### JAMstack 幾個常見的元件
 
 <ImageWithCap
    alt="JAMstack 幾個常見的元件"
@@ -77,7 +75,7 @@ JAMstack，一種 (pre-built) 靜態網頁建置技術，由以下三元素所�
 
 換句話說，J 與 M 從常見選項擇一使用，APIs 可多選亦可都不使用
 
-## 碎念
+### 碎念
 
 我有蓄意不介紹傳統 CMS (Wordpress) 架站方法
 
@@ -85,7 +83,7 @@ JAMstack，一種 (pre-built) 靜態網頁建置技術，由以下三元素所�
 
 此外，Jamstack 串接 Headless CMS 服務也不在本文討論範圍內 (追求最簡可行產品是也~)
 
-# Jamstack Site Generator
+## Jamstack Site Generator
 
 Site generator 將 markup 轉換成靜態頁面，通常 generator 會搭配一種特定程式語言和前端框架（樣板語言）
 
@@ -106,7 +104,7 @@ Site generator 將 markup 轉換成靜態頁面，通常 generator 會搭配一�
    - Language: Ruby
    - Template: Liquid
 
-# Next.js Starter
+## Next.js Starter
 
 Starter 中文可以翻成新手包 (傻瓜包)，目的是一鍵安裝馬上得到一個可用又不難看的產品
 
@@ -124,7 +122,7 @@ Theme 通常只有視覺上幫你套好，功能面要自己來，Starter 則是
 - [Vercel Next.js Demo Site (覺得陽春)](https://next-blog-starter.vercel.app)
 - [Next.js TailwindCss Starter Blog (看起來厲害多了)](https://github.com/timlrx/tailwind-nextjs-starter-blog)
 
-## TailwindCss
+### TailwindCss
 
 >A utility-first CSS framework packed with classes like `flex`, `pt-4`, `text-center` and `rotate-90` that can be composed to build any design, directly in your markup.  
 >--- TailwindCss 官網
@@ -144,7 +142,7 @@ TailwindCss 其他特點
 - 部署時會自動移除沒使用到的 classes，減少 css file 檔案大小
 - Framework 色系，字體，字級都可以透過 config file 客製
 
-## Starter Blog 建置技術步驟
+### Starter Blog 建置技術步驟
 
 依照官網 [readme](https://github.com/timlrx/tailwind-nextjs-starter-blog#quick-start-guide) 有下列步驟
 
@@ -168,7 +166,7 @@ TailwindCss 其他特點
 7. Add blog posts (略)
 8. Deploy on Vercel (略)
 
-## 設計微調
+### 設計微調
 
 本來想做成 [Hugo Theme Hermit](https://github.com/Track3/hermit) 極簡風
 
@@ -184,7 +182,7 @@ TailwindCss 其他特點
 5. 調整 `ListLayout.tsx`
    - 增加 `framer-motion`
 
-# Hosting Service
+## Hosting Service
 
 當初是 Vercel/ GitHub Pages 二選一，本來想放在 GitHub 上，好處可以少辦一個帳號
 
@@ -192,7 +190,7 @@ TailwindCss 其他特點
 
 做一組收下巴運動後，果斷使用 Vercel (next.js 親爹有加分)
 
-## 技術步驟
+### 技術步驟
 
 照著[官網文件](https://nextjs.org/learn/basics/deploying-nextjs-app)步驟做
 
@@ -208,7 +206,7 @@ TailwindCss 其他特點
 
 有恆心的人可以挑戰一個ㄧ個改，我果斷放棄直接降低告警層級
 
-# 域名供應商
+## 域名供應商
 
 打算 NameCheap、GoDaddy 二選一，爬了一下文章
 
@@ -220,7 +218,7 @@ TailwindCss 其他特點
 
 要注意 Vercel 有內建 `https`了，NameCheap 這邊不用加購
 
-## 將新域名加到 Vercel，技術步驟
+### 將新域名加到 Vercel，技術步驟
 
 1. 參考 Vercel 官網文件 [Custom Domains](https://vercel.com/docs/concepts/projects/custom-domains)
 1. 按照步驟產生各一組 `A Record` 和 `CName`  
@@ -232,7 +230,7 @@ TailwindCss 其他特點
 1. 設定後 Vercel 那邊會自動 refresh
 1. 大約五分鐘內就可以用新域名開啟網頁了~
 
-### 插曲
+#### 插曲
 
 1. 第一次開啟網頁需要手動敲 `http` (without s)
 1. 跑過一次後 `https` 會自動補上，感恩 Vercel 讚嘆 Vercel！
@@ -241,7 +239,7 @@ TailwindCss 其他特點
    - 如果兩邊設定相反可能發生遞迴
    - 但預設是可行的，不求甚解！
 
-# 總結
+## 總結
 
 - 本文從技術角度記錄如何建立一個部落格
 - 首先介紹使用的網頁建置技術 --> Jamstack
@@ -249,7 +247,7 @@ TailwindCss 其他特點
 - 以及相關新手包與發布服務 --> Vercel
 - 最後再介紹域名供應商以及如何設定買好的域名 --> NameCheap
 
-## 許願池
+### 許願池
 
 - 這文章是第二版，把一些參考資料和心路歷程閹割掉了，如有讀者想看歡迎底下敲碗
 - 未來希望能實作 reference popup 的效果，這樣就能隨心所欲的置入迷因和 buzzwords 😆
