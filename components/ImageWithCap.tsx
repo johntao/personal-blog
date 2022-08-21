@@ -1,5 +1,5 @@
 import NextImage from 'next/image'
-import ImageCap from './ImageCap'
+import React from 'react'
 
 // import { CSSProperties, useEffect, useState } from 'react'
 // import { Properties } from 'rehype-autolink-headings'
@@ -41,7 +41,9 @@ const ImageWithCap = ({ alt, src, cap, width, height }: ImageCapProps) => {
         // onLoad={e => e.currentTarget.style.position = 'relative'}
         // style={{ position: style.position, height: style.height }}
         />}
-      <figcaption><ImageCap matches={[...cap.matchAll(/[\w ]+|\[([^\]]+)\]\(([^)]+)\)/g)]} /></figcaption>
+      <figcaption>{[...cap.matchAll(/[\w ]+|\[([^\]]+)\]\(([^)]+)\)/g)]
+      .map(q => !q[1] ? q[0] : React.createElement('a', { href: q[2], key: q[2] }, q[1]))
+      }</figcaption>
     </figure>)
 }
 
