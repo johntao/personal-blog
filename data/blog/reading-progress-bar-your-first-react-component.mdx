@@ -1,0 +1,215 @@
+---  
+title: '去吧進度條！人生第一個 react component，就決定是你了'
+date: '2022-08-22'
+lastmod: '2022-08-22'
+tags: ['build-a-blog', 'blog-functions', 'react', 'tailwind-css', 'tech-skills-basic']
+draft: false
+summary: '本文使用 TailwindCss 以及 React Component 簡單製作了一個閱讀進度條'
+images: []
+---
+
+## 適合閱讀對象
+
+- 具備基礎程式能力
+- react 菜鳥
+- 容易被小東西迷惑的人
+
+## 練習目標 —— 閱讀進度條
+
+每次逛其他的人的部落格，總是會被一些酷炫的小功能給迷惑，這次迷惑的對象是這個 👇
+
+<ImageWithCap
+  alt="reading-progress-bar"
+  src="https://i.imgur.com/WIjYLuM.gif"
+  cap="Screen record from [Parth Desai](https://musing.vercel.app/blog/spotify-refresh-token)"
+  />
+
+閱讀進度條，當你注意到之後，就再也無法忽視的小東西
+
+今天就來看看要如何用 react component，自己刻一個閱讀進度條吧～
+
+## Step 1 建立 react compoenet
+
+首先附上源碼 (~~複製貼上結束這回合~~)
+
+``` tsx
+//filename: components/ReadingBar.tsx
+import { useState, useEffect } from "react";
+export default function ReadingBar() {
+  const [width, setWidth] = useState(0);
+  const updateWidthOnScroll = () => {
+    const curY = window.scrollY;
+    const totalY = document.body.scrollHeight - window.innerHeight;
+    if(!curY || !totalY) return setWidth(0)
+    if (curY > totalY) return setWidth(100)
+    setWidth((curY / totalY) * 100);
+  }
+  useEffect(() => {
+    window.addEventListener("scroll", updateWidthOnScroll);
+    return () => window.removeEventListener("scroll", updateWidthOnScroll);
+  }, []);
+  return <div className="fixed h-1 z-30 bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: width + '%' }} />;
+}
+```
+
+## Step 2 補課時光
+
+對 react 不熟的讀者要先了解一下 component 三要素
+
+### 1. function or class declaration
+
+Component 可以被宣告成 function 或 class，其中 class 是舊寫法，因為寫法不易維護已逐漸棄用，新朋友就多多使用 function 格式吧
+
+Component 定義後就能使用在任何 tsx (其他 components)，語法如右 `<ReadinngBar />`
+
+Function 可以宣告 parameters，由呼叫端傳入參數，例如：`<ReadingBar isShow={false} />`
+
+Fuction 部份就要定義成 `function ReadingBar(isShow: boolean) { ... }`，這邊暫時不會用到這個特性
+
+### 2. hooks
+
+function 格式獨有的新東西，對應到 class 就是 `componentDidMount`、`componentWillUnmount` 這些事件
+
+useXxx 開頭的 functions，像是 `useState`, `useEffect` 這些都屬於 hooks
+
+hooks 是有 callback (event) 意義的 functions
+
+以 `useEffect` 為例，每次 component render 之後就會觸發一次，等同於 class `componentDidMount`、`componentDidUpdate`
+
+而 `componentWillUnmount` 則隱含在 `useEffect` return function
+
+當使用 `useEffect` 沒有 return 的話，就等於 component 少了 unmount 清除事件喔
+
+`useState` 是另一個長相奇特的 function，功能是給元件綁定一個狀態，假如狀態值改變，就更新 component 對應的屬性
+
+`useState` 有三個元素，以 `const [width, setWidth] = useState(0);` 為例子
+
+`width` 表示綁定在元件上的變數；`setWidth` 是專門用於修改 `width` 值的 function；`0` 表示狀態預設值
+
+### 3. return jsx (Javascript XML)
+
+另一個 react 神奇的機制，可以在 javascript 裡宣告 html tags，甚至可以在 tags 穿插大括號 '{}'，切換成 js 語法
+
+以 `return <div style={{ width: widthResult + '%' }} />` 為例子，就是將一個 js object 塞到 style 屬性
+
+藉此將 `div` `style.width` 屬性更新成變數 `widthResult`
+
+此外，神奇的大括號也可以做迴圈、條件等處理，這邊暫時不會用到這些特性
+
+React 不允許在 return statement 回傳數個 element
+
+例如 `return ( <p>first</p> <p>second</p> )` 這樣的寫法就會報錯
+
+一個實用技巧是把數個 element 用虛擬節點 `<> </>` 包起來
+
+如右 `return ( <> <p>first</p> <p>second</p> </> )`，這樣就能夠通過編譯
+
+## Step 3 計算 ScrollY
+
+補完課再來閱讀程式，發現真的需要了解的部分只剩下 ScrollY 計算，其餘部分都可從字面解讀
+
+`useState` 就是宣告需要綁定的狀態，`useEffect` 就是註冊 onScroll 事件
+
+接著就來看重點程式，結論還是字面上可解讀 XDD
+
+這邊重點應該是物件屬性有很多同義詞，我尚未細細去研究過，也許跟瀏覽器支援度有關
+
+像是 `window.scrollY` 就可以有 `window.pageYOffset`、`document.documentElement.scrollTop`、`document.body.scrollTop` 這麼多變化
+
+`document.body.scrollHeight` 跟 `document.documentElement.scrollHeight` 互通
+
+`window.innerHeight` 與 `document.documentElement.clientHeight` 互通
+
+之後有機會再寫文章深入研究～
+
+``` tsx
+const updateWidthOnScroll = () => {
+  const curY = window.scrollY;
+  const totalY = document.body.scrollHeight - window.innerHeight;
+  if(!curY || !totalY) return setWidth(0)
+  if (curY > totalY) return setWidth(100)
+  setWidth((curY / totalY) * 100);
+}
+```
+
+## Step 4 設計
+
+因為有用 TailwindCss 就直接串滿 utility classes 了
+
+在這邊比對一下各種寫法差異
+
+``` tsx
+// 1. TailwindCss
+const tw = (<div className="fixed h-1 z-30 bg-gradient-to-r from-cyan-500 to-blue-500" />)
+
+// 2. styled-components
+const Sc2 = styled.div`
+  position: fixed;
+  height: 0.25rem;
+  z-index: 30;
+  background-image: linear-gradient(to right, #06b6d4, #3b82f6);
+`
+const sc = (<Sc2 />)
+
+// 3. style object
+const so = {
+  position: 'fixed',
+  height: '0.25rem',
+  zIndex: 30,
+  backgroundImage: 'linear-gradient(to right, #06b6d4, #3b82f6)'
+}
+const so2 = (<div style={so}>)
+```
+
+其中第二種需要安裝 package "styled-components"
+
+還有第四種寫法是直接 inline 字串到 style，但我想 TailwindCss 應該可以完美取代這種 case
+
+個人是偏好第一種，尤其在 vscode 有安裝 TailwindCss Intellisense 的情況，開發就是快～
+
+
+## Step 5 實裝到頁面上
+
+開啟 `components/LayoutWrapper.tsx`，調整程式碼如下
+
+![reading-bar-plugin.png](/static/images/2022/reading-bar-plugin.png)
+
+加在這的主要原因是，`<ReadingBar />` 需要被放在最上層容器，如果我們加在 `layouts/PostLayout.tsx`
+
+進度條將會受限在內文容器的寬度 (就跟 `<DesktopNav />` 一樣，寬度需要撐開整個畫面)
+
+另一個亮點是 `useRouter`，這是為了控制進度條只有在 "閱讀文章" 的時候出現
+
+`{isBlogPost && <ReadingBar />}` 這個是 conditional rendering 短寫法
+
+若左邊為 true 則 render component；若左邊為 false 則不做 render
+
+成品如下圖 🎉🎉
+
+![reading-bar-final.gif](https://i.imgur.com/VPby3aZ.gif)
+
+## 結論
+
+本文使用 TailwindCss 以及 React Component 簡單製作了一個閱讀進度條
+
+React 部分複習了 function component、hooks 以及 jsx
+
+設計的部分使用了 TailwindCss，並稍微比較了其他撰寫方法
+
+最後再把 component 實裝到 `LayoutWrapper`，並加上 route 判斷，確保進度條只有在閱讀文章時會出現
+
+### 後記
+
+做完這個功能才發現跟既有功能衝突了，之前被極簡風主題迷惑時加了一個捲軸功能
+
+--> 下捲時隱藏 NavBar；上捲顯示 NavBar
+
+現在加了進度條之後，發現這功能明顯阿雜 😓😓
+
+果然設計的素養就是不能到處被迷惑啊～
+
+## 參考資料
+
+- CodeSandbox: [React Reading Progress Bar](https://codesandbox.io/s/i0k8e8?file=/src/Components/ReadingBar.js)
+- TailwindCss docs: [Gradient Color Stops](https://tailwindcss.com/docs/gradient-color-stops)
+- ReactJs docs: [Conditional Rendering](https://en.reactjs.org/docs/conditional-rendering.html#inline-if-with-logical--operator)
