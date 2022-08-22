@@ -1,0 +1,117 @@
+---  
+title: '提升中文閱讀體驗！TailwindCss 字體版型動手修'
+date: '2022-08-22'
+lastmod: '2022-08-22'
+tags: ['build-a-blog', 'blog-styles', 'tailwind-css', 'typography', 'tech-skills-basic']
+draft: false
+summary: '介紹如何使用工具檢查字體，將新字體套用到 Next.Js + TailwindCss，以及調整 TailwindCss Typography (字級、行距與外距)'
+images: []
+---
+
+## 適合閱讀對象
+
+- 具備基礎程式能力
+- 前端菜鳥
+- 對 tailwind css 感興趣
+
+## 練習目標 —— 調整文章字體排版
+
+身為一個~~偽~~前端工程師，對於排版和字體的好壞多少會有反應
+
+自從第一篇文章以來，就一直覺得新手包的中文字型母湯，行距也 NG (大概是因為原始版不是為了中文而設計的)
+
+現在就讓我們來看看，在 TailwindCss 要如何處理這些眉角吧
+
+## Step 1 找到對的字體
+
+首先，就用 "檢查元素" 去找到自己喜歡的字體吧
+
+![meme-go-eat-something-you-like](/static/images/meme-go-eat-something-you-like.png)
+
+迅速的從[新手包範例清單](https://github.com/timlrx/tailwind-nextjs-starter-blog/tree/master#examples)挑了一個中文部落格，~~拿出筷子~~檢查好看的字體是用哪一牌的
+
+<ImageWithCap
+  alt="nice-font"
+  src="/static/images/2022/nice-font.png"
+  cap="Screenshot from [小康](https://honghong.me/blog/php)"
+  />
+
+這邊有幾點要注意，Computed 裡看到的 `font-family` 不代表真實渲染的字體
+
+`font-family` 宣告的是字體使用優先順序，假如字元 (glyph) 或字體 (font) 不存在就會選用下一個字體
+
+真實套用的字體要看上圖右下角 "Rendered Fonts"
+
+上圖我檢查元素的目標是標題 "簡介 PHP"，從 Rendered Fonts 可知
+
+"簡介" 這兩個字元套用到 "Noto Sans TC" 字體
+
+" PHP" 這四個字元套用到 "Sora" 字體
+
+接著用工具把文字內容複製回自己的部落格，比較一下差異
+
+![bad-font](/static/images/2022/bad-font.png)
+
+從字體來說，同樣是無襯線體 (sans-serif)，我們使用的 `PingFang SC` 比較不飽滿，全形標點符號位置偏低
+
+![font-comparison](/static/images/2022/font-comparison.png)
+
+從排版來說，標題的部分字級 `font-size` 與外距 `margin` 不一樣
+
+內文的部分字級、行高 `line-height`、字元間距 `letter-spacing` 不一樣
+
+研究完差異之後，就可以開始動手修改啦
+
+## Step 2 設定字體
+
+首先到 [Google Fonts](https://fonts.google.com) 搜尋 noto
+
+點選 "Noto Sans Traditional Chinese"，往下移動到 "Styles" 段落，點擊 "Medium 500" ，如下圖
+
+![google-fonts](/static/images/2022/google-fonts.png)
+
+重複同樣的動作，搜尋 "sora" 點選 "Regular 400"，這時選好的字體都進到右側欄了
+
+接著點選右側欄 "@import" 將 "style" tag 之間的文字複製起來
+
+打開 `css/tailwind.css` 檔案，將剛剛複製的文字貼在最上方，如下圖
+
+![tailwind-css.png](/static/images/2022/tailwind-css.png)
+
+然後打開 `tailwind.config.js`，找到 `theme.extend.fontFamily` 屬性，把 `'InterVariable'` 改成 `'Sora', '"Noto Sans TC"'`，如下
+
+![tailwind-config-js.png](/static/images/2022/tailwind-config-js.png)
+
+接著開啟 `next.config.js`，把這兩個值 `https://fonts.googleapis.com`、`https://fonts.gstatic.com` 加到 `ContentSecurityPolicy`，如下
+
+![content-security-policy.png](/static/images/2022/content-security-policy.png)
+
+最後重新執行 `npm start` 新字體就設定完成啦～  
+(註：改動 `next.config.js` 會需要重啟 server 才會套用變更)
+
+## Step 3 調整版型
+
+開啟 `layouts/PostLayout.tsx`，找到含有 `prose` class 的元素，加入 `tracking-wide` class，如下
+
+![post-layout.png](/static/images/2022/post-layout.png)
+
+其中 `prose` 元素為 TailwindCss "Typography" plugin 專用的 class，`tracking-wide` 則是用於增加字元間距 `letter-spacing`
+
+接著打開 `tailwind.config.js`，找到 `theme.extend.typography.DEFAULT.css` 屬性，修改如下
+
+![tailwind-config-js-typography.png](/static/images/2022/tailwind-config-js-typography.png)
+
+調整的目的為覆寫預設值，增加內文行距、字級以及減小標題外距
+
+醬就修改完成囉，除了字體的部分稍嫌麻煩，排版的部份比想像中好改很多～
+
+前後對照圖如下 (左前右後)，感覺閱讀體驗有提升一些了 😌😌
+
+![font-before-after.png](/static/images/2022/font-before-after.png)
+
+## 參考資料
+
+- StackOverflow: [Google Fonts violates Content Security Policy](https://stackoverflow.com/questions/33984908/google-fonts-violates-content-security-policy)
+- Next.Js docs: [Security Headers](https://nextjs.org/docs/advanced-features/security-headers)
+- TailwindCss docs: [@tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin)
+- Dev.to: [Add Custom Tailwind CSS Fonts to your website](https://dev.to/thomasvanholder/add-a-custom-tailwind-css-fonts-to-your-website-1nn6)
