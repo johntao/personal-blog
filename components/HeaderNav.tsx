@@ -16,29 +16,11 @@ const throttle = (callback, limit: number) => {
   };
 };
 
-const DesktopNav = ({ onToggleNav }) => {
-  const [ isScrollDown, setIsScrollDown ] = useState(false)
-  useEffect(() => {
-    let lastScrollPosition = window.pageYOffset;
-    const handleScroll = () => { 
-      const currentScrollPosition = Math.max(window.pageYOffset, 0);
-      if (currentScrollPosition > lastScrollPosition)
-        setIsScrollDown(true)
-      else
-        setIsScrollDown(false)
-      lastScrollPosition = currentScrollPosition;
-    }
-    window.addEventListener('scroll', throttle(handleScroll, 250))
-    return () => {
-      window.removeEventListener('scroll', throttle(handleScroll, 250))
-    }
-  }, [])
+const HeaderNav = ({ onToggleNav }) => {
 
   return (
     <header
-      className={`sticky top-0 left-0 right-0 z-40 border-b border-gray-200 bg-opacity-30 py-2 backdrop-blur-lg backdrop-filter dark:border-gray-700 animated ${
-        isScrollDown ? 'slideOutDown' : 'slideInUp'
-      }`}
+      className={`sticky top-0 left-0 right-0 z-40 border-b border-gray-200 bg-opacity-30 py-2 backdrop-blur-lg backdrop-filter dark:border-gray-700`}
       >
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 sm:px-6 xl:max-w-5xl xl:px-0">
         <Link href="/" aria-label={siteMetadata.headerTitle}>
@@ -93,4 +75,4 @@ const DesktopNav = ({ onToggleNav }) => {
   )
 }
 
-export default DesktopNav
+export default HeaderNav

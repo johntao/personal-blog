@@ -1,7 +1,7 @@
 const siteMetadata = {
-  title: '打玩開發',
+  title: 'JT',
   author: 'John Tao',
-  headerTitle: '打玩開發',
+  headerTitle: 'JT',
   description: '',
   language: 'en-us',
   theme: 'system', // system, dark or light

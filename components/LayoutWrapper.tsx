@@ -1,7 +1,7 @@
 import SectionContainer from './SectionContainer'
 import Footer from './Footer'
 import MobileNav from './MobileNav'
-import DesktopNav from './DesktopNav'
+import HeaderNav from './HeaderNav'
 import { ReactNode, useState } from 'react'
 import ReadingBar from './ReadingBar'
 import { useRouter } from 'next/router';
@@ -18,7 +18,7 @@ const LayoutWrapper = ({ children }: Props) => {
     <>
       {isBlogPost && <ReadingBar />}
       <MobileNav isMobileNavVisible={isMobileNavVisible} onToggleNav={onToggleNav} />
-      <DesktopNav onToggleNav={onToggleNav} />
+      <HeaderNav onToggleNav={onToggleNav} />
       <SectionContainer>
         <div className="flex flex-col justify-between">
           <main className="mb-auto">{children}</main>
