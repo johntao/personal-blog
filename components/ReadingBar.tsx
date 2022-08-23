@@ -22,5 +22,5 @@ export default function ReadingBar() {
     window.addEventListener("scroll", updateWidthOnScroll);
     return () => window.removeEventListener("scroll", updateWidthOnScroll);
   }, []);
-  return <div className="fixed h-1 z-30 bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${width}%` }} />;
+  return <div className="fixed h-1 z-50 bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${width}%` }} />;
 }
