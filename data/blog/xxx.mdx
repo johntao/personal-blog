@@ -1,0 +1,62 @@
+---  
+title: 'xxx'
+date: '2022-08-23'
+lastmod: '2022-08-23'
+tags: ['build-a-blog', 'blog-functions', 'react', 'tailwind-css', 'tech-skills-basic']
+draft: false
+summary: 'xxx'
+images: []
+---
+
+Questions
+- the proper way to add caption
+- how to omit width/ height
+- how to modify style after rendered
+- how to create component from string
+  - input literal, parse it to several anchors
+  - Image by []() from []()
+- knowledge about NextImage, how they optimize images...
+
+- the proper way to add caption
+- to omit width/ height
+  - [next/image - Make image fill available space without specifying height or width](https://dev.to/tanahmed/next-image-make-image-fill-available-space-272o)
+    - comment doesn't work
+  - [How to set the next/image component to 100% height](https://stackoverflow.com/questions/65169431/how-to-set-the-next-image-component-to-100-height)
+- we want to leverage useEffect to modify style, but it didn't work
+  - [The last guide to the](https://blog.logrocket.com/guide-to-react-useeffect-hook/)
+- the proper way to create componenet from string
+  - [Create an instance of a React class from a string](https://stackoverflow.com/questions/30172433/create-an-instance-of-a-react-class-from-a-string)
+  - [Create react component dynamically](https://stackoverflow.com/questions/31234500/create-react-component-dynamically)
+  - [How to render a string as React component?](https://thewebdev.info/2021/11/06/how-to-render-a-string-as-react-component/)
+    - I don't think this would work
+- createClass is obsolete
+  - [ReactJs CreateClass is not a function](https://stackoverflow.com/questions/46482433/reactjs-createclass-is-not-a-function)
+- createElement
+  - [React Top-Level API](https://reactjs.org/docs/react-api.html#createelement)
+- the extreme document...
+  - [next/image](https://nextjs.org/docs/api-reference/next/image)
+
+## 適合閱讀對象
+
+- 具備基礎程式能力
+- react 菜鳥
+- 對 `<NextImage />` 感到困惑的人
+
+## 練習目標 —— 幫 Image 元件加上 Caption
+
+相信每個寫過 .mdx 的人都曾經為 Image 感到困惑
+
+究竟要使用 `![alt](url)` 還是 `<Image alt="alt" src="src" width={16} height={16} />`？
+
+Caption 應該與 Image 同行，還是斷行或分段放在 Image 下面呢？
+
+今天就一起來解惑吧！
+
+## Step 1
+
+<ImageWithCap
+  alt="reading-progress-bar"
+  src="https://i.imgur.com/WIjYLuM.gif"
+  cap="Screen record from [Parth Desai](https://musing.vercel.app/blog/spotify-refresh-token)"
+  />
+
