@@ -75,9 +75,9 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                 </span>
                 <span className="flex items-center gap-1.5">
                   <HiOutlineEye className="h-5 w-5" />
-                  <ViewCounter className="ml-0" slug={slug} isBlogPage={true} />
+                  {/* <ViewCounter className="ml-0" slug={slug} isBlogPage={true} /> */}
                   {/* {viewCount} */}
-                  <div className="-ml-0.5">Views</div>
+                  {/* <div className="-ml-0.5">Views</div> */}
                 </span>
               </div>
             </div>
